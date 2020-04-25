@@ -1,1 +1,1 @@
-Relevant Group News webpage files to update.
+Relevant Group News webpage files.
