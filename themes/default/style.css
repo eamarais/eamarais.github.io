@@ -75,7 +75,7 @@ body {
 	border-bottom: 1px solid #ddd;
 	}
 
-footer {
+#footer {
 	background: #eee url('images/kubrickfooter_leicester.jpg') no-repeat top;
 	border: none;
         width: 960px;
