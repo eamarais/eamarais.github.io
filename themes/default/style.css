@@ -38,13 +38,13 @@ body {
 	}
 
 .header {
-	background: url("./images/kubrickheader-no2.png") no-repeat bottom center;
-        height: 200px; width: 958px;
-        margin: 7px 9px 0; padding: 0;
+	background: url('images/kubrickheader-no2.png') no-repeat bottom center;
+    height: 200px; width: 958px;
+    margin: 7px 9px 0; padding: 0;
 	}
 
 #headerimg 	{
-	margin: 7px 9px 0;
+	margin: 7px -13px 0;
 	height: 258px;
 	width: 940px;
 	}
