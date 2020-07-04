@@ -38,7 +38,7 @@ body {
 	}
 
 #header {
-	background: url("/themes/default/images/kubrickheader-no2.png") no-repeat bottom center;
+	background: url("https://github.com/eamarais/eamarais.github.io/blob/main/themes/default/images/kubrickheader-no2.png") no-repeat bottom center;
     height: 200px; width: 958px;
     margin: 7px 9px 0; padding: 0;
 	}
