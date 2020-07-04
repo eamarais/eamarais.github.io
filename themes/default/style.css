@@ -24,7 +24,7 @@ Tags: blue, custom header, fixed width, two columns, widgets
 body {
 	font-size: 62.5%; /* Resets 1em to 10px */
 	font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
-	background: url("/themes/default/images/kubrickbgcolor.jpg");
+	background: url("./images_css/kubrickbgcolor.jpg");
 	color: #333;
 	text-align: center;
 	}
@@ -38,7 +38,7 @@ body {
 	}
 
 #header {
-	background: url("https://github.com/eamarais/eamarais.github.io/blob/main/themes/default/images/kubrickheader-no2.png") no-repeat bottom center;
+	background: url("./images_css/kubrickheader-no2.png") no-repeat bottom center;
     height: 200px; width: 958px;
     margin: 7px 9px 0; padding: 0;
 	}
@@ -76,7 +76,7 @@ body {
 	}
 
 #footer {
-	background: #eee url("/themes/default/images/kubrickfooter_leicester.jpg") no-repeat top;
+	background: #eee url("./images_css/kubrickfooter_leicester.jpg") no-repeat top;
 	border: none;
         width: 958px;
 	margin: 14px 13px 0;
