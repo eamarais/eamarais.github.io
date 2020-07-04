@@ -75,10 +75,13 @@ body {
 	border-bottom: 1px solid #ddd;
 	}
 
-.footer {
+#footer {
 	background: #eee url('images/kubrickfooter_leicester.jpg') no-repeat top;
 	border: none;
-        width: 960px;
+        width: 958px;
+	margin: 14px 13px 0;
+	padding: 0;
+	text-align: center;
 	}
 
 small {
@@ -333,14 +336,14 @@ body {
 	clear: both;
 }
 
-//#footer {
+#footer z {
 	padding: 0;
 	margin: 0 auto;
 	width: 960px;
 	clear: both;
 	}
 
-//#footer p {
+#footer p {
 	margin: 0;
 	padding: 20px 0;
 	text-align: center;
