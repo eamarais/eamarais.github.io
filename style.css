@@ -232,7 +232,7 @@ body {
 #navmenu li:hover li {float: none; z-index: 999;}
 #navmenu li:hover li a {
 	z-index: 999;
-	background-color: #ADD7E4;
+	background-color: #FFDAB9;
 	color: black
 }
 #navmenu li li a:hover {position: relative; z-index: 999;background-color: #69f; color: white}
@@ -246,7 +246,7 @@ body {
 	text-decoration: none;
 	color: black;
 	border: 1px solid #000;
-	background-color: #ADD7E4;
+	background-color: #FFDAB9;
 	z-index: 999;
 }
 #navmenu a:hover,a:active {z-index: 999;color: white; background-color:#69AEE7}
