@@ -67,9 +67,19 @@
 
 	</div>
 
-<div id="navmenu">
+<!--Navigation bar-->
 
-<ul>
+<div id="navmenu">
+<!--<link rel="import" href="./nav.html" >-->
+<!--<include src="./nav.html"></include>-->
+
+<iframe src="./nav.html" onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+	
+<!--<div data-include="nav.html"></div>	-->
+	
+<!--<link rel="import" href="nav.html">-->
+
+<!--<ul>
 
  <li><a style="line-height: 40px;" href="#">Projects</a>
 
@@ -134,7 +144,7 @@
  <li><a href="http://maraisresearchgroup.co.uk/gcpm25_af.html">Africa PM2.5 <br>and ozone</a></li>
 
 </ul> </li>
-</ul>
+</ul>-->
 </div>
 
 </div>
