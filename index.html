@@ -200,6 +200,11 @@ img {vertical-align: middle;}
 	
   <!-- Full-width images with number and caption text -->
 	<div class="mySlides fade">
+    <img class="centered" src="./images_news/tropomi-ut-no2-amt-2021.png" alt="Image of prevalent sources of VOCs" height="260">
+     <div class="text">Our paper on NO2 in the global upper troposphere from TROPOMI published in <a href="https://acp.copernicus.org/articles/21/6275/2021/acp-21-6275-2021.pdf" target="_blank">AMT</a></div>		
+  </div> 
+
+  <div class="mySlides fade">
     <img class="centered" src="./images_news/Vohra_air_quality_trends_2021.png" alt="Image of prevalent sources of VOCs" height="260">
      <div class="text"><a href="https://www.ucl.ac.uk/news/2021/apr/hidden-air-pollutants-rise-india-and-uk" target="_blank">Press release</a> of our <a href="https://acp.copernicus.org/articles/21/6275/2021/acp-21-6275-2021.pdf" target="_blank">recent paper</a> on monitoring large air pollution changes in cities in India and the UK</div>		
   </div> 
@@ -273,11 +278,6 @@ img {vertical-align: middle;}
     <img class="centered" src="./images_news/ERC_logo.png" alt="ERC Starting Grant awarded to Eloise Marais" height="260">
     <div class="text">Eloise awarded an ERC Starting Grant to better understand reactive nitrogen in the upper troposphere </div>
   </div> 
-			
-  <div class="mySlides fade">
-    <img class="centered" src="./images_news/Eloise-Research-Group.jpg" alt="Research group photo with Irma" height="260">
-    <div class="text">Irma joins us for 3 months to learn to run GEOS-Chem</div>
-  </div>
 	
   <div class="mySlides fade">
     <img class="centered" src="./images_news/nana_wei.jpeg" alt="Nana Wei joins the group to pursue a PhD" height="260">
@@ -293,6 +293,11 @@ img {vertical-align: middle;}
   <div class="mySlides fade">
     <img class="centered" src="./images_news/group-photo.jpg" alt="Group photo with Eziekel" height="260">
     <div class="text">Eziekel visits the group to learn to run GEOS-Chem on the Amazon Cloud</div>
+  </div>
+
+  <div class="mySlides fade">
+    <img class="centered" src="./images_news/Eloise-Research-Group.jpg" alt="Research group photo with Irma" height="260">
+    <div class="text">Irma joins us for 3 months to learn to run GEOS-Chem</div>
   </div>
 -->
 
@@ -362,7 +367,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  timer=setTimeout(showSlides, 6000, slideIndex); // Change image every 5 seconds
+  timer=setTimeout(showSlides, 5500, slideIndex); // Change image every 5 seconds
 }		
 		
 </script>
