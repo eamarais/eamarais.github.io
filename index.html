@@ -429,7 +429,12 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  timer=setTimeout(showSlides, 4250, slideIndex); // Change image every 5 seconds
+  if (slideIndex==1) {
+	  timer=setTimeout(showSlides, 42500, slideIndex);
+   }else{
+	   timer=setTimeout(showSlides, 4250, slideIndex);
+   }
+  /* timer=setTimeout(showSlides, 4250, slideIndex); // Change image every 5 seconds */
 }		
 		
 </script>
