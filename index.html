@@ -201,6 +201,11 @@ img {vertical-align: middle;}
   <!-- Full-width images with number and caption text -->  
 	
  <div class="mySlides fade">
+	 <img class="centered" src="images_news/ucl-max-doas.jpg" alt="UCL MAX-DOAS" height="260">
+    <div class="text">Our new MAX-DOAS instrument up and running on the Torrington Place rooftop at UCL</div>
+  </div>
+
+  <div class="mySlides fade">
 	 <center><video height="260" loop controls autoplay muted><source src="./images_news/Rockets_climate_effect_movie.mp4" alt="GEOS-Chem-RRTMG TOA radiative forcing" type="video/mp4"></video></center>
     <div class="text">Our work on the impact of rocket launches on climate and the ozone layer <a href="https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2021EF002612" target="_blank">published in Earth's Future</a>.</div>
   </div>	
@@ -315,10 +320,10 @@ img {vertical-align: middle;}
     <div class="text">Our work on the impact of the charcoal industry in Africa on air quality and climate <a href="https://pubs.acs.org/doi/abs/10.1021/acs.est.0c03754" target="_blank">published in ES&T</a></div>
   </div> 
 	
-  <div class="mySlides fade">
+  <!---<div class="mySlides fade">
     <img class="centered" src="./images_news/Vohra_ACP_2020.png" alt="Karn Vohra's paper submitted to ACPD" height="260">
     <div class="text">Our work on trends in city-wide air quality in UK and India <a href="http://maraisresearchgroup.co.uk/Publications/Vohra-ACPD-2020.pdf" target="_blank"> in ACP</a></div>
-  </div> 
+  </div> --->
 
 	<!---<div class="mySlides fade">
     <img class="centered" src="./images_news/marais_aq_grant_pm25.png" alt="Air Quality grant awarded to study PM2.5 in Leicester" height="260">
@@ -429,7 +434,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==1) {
+  if (slideIndex==2) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else{
 	   timer=setTimeout(showSlides, 4250, slideIndex);
