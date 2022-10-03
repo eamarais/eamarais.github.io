@@ -200,6 +200,12 @@ img {vertical-align: middle;}
 	
   <!-- Full-width images with number and caption text -->  
 	
+
+  <div class="mySlides fade">
+    <img class="centered" src="images_news/marais-group-photo-sept2022.jpg" alt="Group photo at iCACGP-IGAC Joint Conference in Manchester" height="260">
+     <div class="text">Our first in-person group photo since the start of the pandemic.</div>		
+  </div>
+	
   <div class="mySlides fade">
     <img class="centered" src="images_news/Group_photo_IGAC_2022.jpeg" alt="Group photo at iCACGP-IGAC Joint Conference in Manchester" height="260">
      <div class="text">Members of the group at the iCACGP-IGAC Joint Conference in Manchester.</div>		
@@ -445,7 +451,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==4) {
+  if (slideIndex==5) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else{
 	   timer=setTimeout(showSlides, 4350, slideIndex);
