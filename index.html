@@ -201,7 +201,12 @@ img {vertical-align: middle;}
   <!-- Full-width images with number and caption text -->  
 	
 
-  	
+ <div class="mySlides fade">
+    <img class="centered" src="images_news/kelly-cacint-2023.png" alt="PM2.5 source contributors in UK cities" height="260">
+     <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
+	 <div class="text">Our work identifying agriculture and pollution from continental Europe as the largest sources of PM2.5 to UK cities published in <a href="https://doi.org/10.1016/j.cacint.2023.100100" target="_blank">CACINT</a>.</div>
+  </div>
+	
  <div class="mySlides fade">
     <img class="centered" src="images_news/marais-group-photo-sept2022.jpg" alt="Group photo on UCL campus" height="260">
      <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
@@ -320,12 +325,12 @@ img {vertical-align: middle;}
     <div class="text">Our work on factors leading to improved air quality in the UK lockdown <a href="https://iopscience.iop.org/article/10.1088/1748-9326/abde5d" target="_blank">published in ERL</a></div>
   </div> 
 	
-	<div class="mySlides fade">
+	<!---<div class="mySlides fade">
     <img class="centered" src="./images_news/AGU_2020.png" alt="AGU 2020 presentations mozaic" height="260">
     <div class="text">Our work showcased at the virtual AGU Fall Meeting (Dec 2020)</div>
   </div> 
 	
-	<!---<div class="mySlides fade">
+	<div class="mySlides fade">
     <img class="centered" src="./images_news/Rob_profile_photo.jpeg" alt="Picture of research fellow Robert Ryan" height="260">
     <div class="text"><a href="https://www.geog.ucl.ac.uk/people/research-staff/robert-ryan/" target="_blank">Rob Ryan</a> joins the group to determine the impact of rocket emissions on atmospheric composition</div>
   </div> --->	
@@ -460,7 +465,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==6) {
+  if (slideIndex==7) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else{
 	   timer=setTimeout(showSlides, 4350, slideIndex);
