@@ -200,8 +200,13 @@ img {vertical-align: middle;}
 	
   <!-- Full-width images with number and caption text -->  
 	
-
  <div class="mySlides fade">
+    <img class="centered" src="images_news/connor_barker_ucl_geog_postdoc.png" alt="Photo of Connor Barker" height="260">
+     <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
+	 <div class="text">Connor Barker joins the group for a postdoc on dry deposition of oxygenated VOCs and the impact of megaconstellation missions on the atmosphere.</div>
+  </div>
+ 
+  <div class="mySlides fade">
     <img class="centered" src="images_news/kelly-cacint-2023.png" alt="PM2.5 source contributors in UK cities" height="260">
      <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
 	 <div class="text">Rural agriculture and pollution from continental Europe dominant source of PM2.5 in UK cities.
@@ -346,10 +351,10 @@ img {vertical-align: middle;}
     <div class="text">Karn Vohra presents his research at the <a href="http://maraisresearchgroup.co.uk/Presentations/Vohra-EGU-2020.pdf" target="_blank">Virtual EGU Zoom session (May 2020)</a></div>
   </div> --->
 	
-	<div class="mySlides fade">
+	<!---<div class="mySlides fade">
     <img class="centered" src="./images_news/Alfred_charcoal_EST_2020.jpg" alt="Charcoal industry air pollution paper published" height="260">
     <div class="text">Our work on the impact of the charcoal industry in Africa on air quality and climate <a href="https://pubs.acs.org/doi/abs/10.1021/acs.est.0c03754" target="_blank">published in ES&T</a></div>
-  </div> 
+  </div> --->
 	
   <!---<div class="mySlides fade">
     <img class="centered" src="./images_news/Vohra_ACP_2020.png" alt="Karn Vohra's paper submitted to ACPD" height="260">
@@ -466,7 +471,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==7) {
+  if (slideIndex==8) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else{
 	   timer=setTimeout(showSlides, 4420, slideIndex);
