@@ -201,6 +201,12 @@ img {vertical-align: middle;}
   <!-- Full-width images with number and caption text -->  
 	
  <div class="mySlides fade">
+    <img class="centered" src="images_news/TheGuardian-PollutionWatch-Mar2023.png" alt="Photo of Connor Barker" height="260">
+     <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
+	 <div class="text"><a href="https://www.theguardian.com/environment/2023/mar/24/uk-farming-causes-over-quarter-cities-particle-pollution-study" target="_blank">The Guardian</a> covers our work on the ubiquitous influence of agriculture on PM2.5 in UK cities.</div>
+  </div>
+
+  <div class="mySlides fade">
     <img class="centered" src="images_news/connor_barker_ucl_geog_postdoc.png" alt="Photo of Connor Barker" height="260">
      <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
 	 <div class="text">Connor Barker joins the group for a postdoc on dry deposition of oxygenated VOCs and the impact of megaconstellation missions on the atmosphere.</div>
@@ -266,10 +272,10 @@ img {vertical-align: middle;}
      <div class="text">Our work on greenhouse gas and air pollutant emissions from powerships now in <a href="https://pubs.rsc.org/en/Content/ArticleLanding/2022/VA/D1VA00049G#!divAbstract" target="_blank">Environ. Sci. Adv.</a></div>		
   </div> 
 
-  <div class="mySlides fade">
+  <!---<div class="mySlides fade">
     <img class="centered" src="./images_news/Marais_group_2021_hollywood_bowl_mk.jpeg" alt="Group get-together at Hollywood Bowl" height="260">
      <div class="text">End-of-year (2021) group celebration at Hollywood Bowl</div>		
-  </div>
+  </div>--->
 	
   <div class="mySlides fade">
     <img class="centered" src="./images_news/Conversation_Nov2021.png" alt="Conversation piece (November 2021)" height="260">
@@ -471,7 +477,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==8) {
+  if (slideIndex==9) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else{
 	   timer=setTimeout(showSlides, 4400, slideIndex);
