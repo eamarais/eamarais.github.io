@@ -200,6 +200,12 @@ img {vertical-align: middle;}
 	
   <!-- Full-width images with number and caption text -->  
 	
+<div class="mySlides fade">
+    <img class="centered" src="images_news/marais-group-photo-aug2023.jpg" alt="Group photo on UCL campus" height="260">
+     <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
+	 <div class="text">Group photo with (left to right) Karn, Gongda, Connor, Eloise, Bex, Eleanor, Nana</em></div>
+  </div>
+	
  <div class="mySlides fade">
     <img class="centered" src="images_news/central-london-ozone-air-pollution-2022.png" alt="Ozone air pollution in Central London" height="175">
      <div class="text">Heatwaves and ozone air pollution in Central London.</div>
@@ -309,10 +315,10 @@ img {vertical-align: middle;}
      <div class="text">Our work on satellite-derived UK ammonia emissions published in the <a href="https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2021JD035237" target="_blank">J. Geophys. Res.</a> </div>		
   </div> 
 	
-  <div class="mySlides fade">
+  <!---<div class="mySlides fade">
     <img class="centered" src="./images_news/Falcon9-launch.jpg" alt="Image of rocket launch" height="260">
      <div class="text"><a href="https://theconversation.com/space-tourism-rockets-emit-100-times-more-co-per-passenger-than-flights-imagine-a-whole-industry-164601" target="_blank">The Conversation</a> and <a href="https://www.theguardian.com/science/2021/jul/19/billionaires-space-tourism-environment-emissions" target="_blank">The Guardian</a> articles on the atmospheric impact of a nascent space tourism industry</div>		
-  </div> 
+  </div> --->
 	
   <div class="mySlides fade">
     <img class="centered" src="./images_news/Vohra_air_quality_trends_2021.png" alt="Image of prevalent sources of VOCs" height="260">
@@ -484,7 +490,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==10) {
+  if (slideIndex==11) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else{
 	   timer=setTimeout(showSlides, 4400, slideIndex);
