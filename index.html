@@ -201,6 +201,11 @@ img {vertical-align: middle;}
   <!-- Full-width images with number and caption text -->  
 	
 <div class="mySlides fade">
+    <img class="centered" src="images_news/vohra-et-al-premature-mortality-tropical-cities.png" alt="Group photo on UCL campus" height="260">
+	 <div class="text">Karn speaks to <a href="https://www.bbc.com/future/article/20231017-why-clean-air-is-a-luxury-that-many-cant-afford" target="_blank">the BBC</a> about his research into the rapid air quality degradation in tropical cities</div>    
+  </div>
+	
+<div class="mySlides fade">
     <img class="centered" src="images_news/gce2-meeting-attendees.jpg" alt="Group photo on UCL campus" height="260">
 	 <div class="text">2nd Regional Europe GEOS-Chem User's Meeting at UCL in August 2023</div>
   </div>
@@ -322,12 +327,12 @@ img {vertical-align: middle;}
   <!---<div class="mySlides fade">
     <img class="centered" src="./images_news/Falcon9-launch.jpg" alt="Image of rocket launch" height="260">
      <div class="text"><a href="https://theconversation.com/space-tourism-rockets-emit-100-times-more-co-per-passenger-than-flights-imagine-a-whole-industry-164601" target="_blank">The Conversation</a> and <a href="https://www.theguardian.com/science/2021/jul/19/billionaires-space-tourism-environment-emissions" target="_blank">The Guardian</a> articles on the atmospheric impact of a nascent space tourism industry</div>		
-  </div> --->
+  </div> 
 	
   <div class="mySlides fade">
     <img class="centered" src="./images_news/Vohra_air_quality_trends_2021.png" alt="Image of prevalent sources of VOCs" height="260">
      <div class="text"><a href="https://www.ucl.ac.uk/news/2021/apr/hidden-air-pollutants-rise-india-and-uk" target="_blank">Press release</a> of our <a href="https://acp.copernicus.org/articles/21/6275/2021/acp-21-6275-2021.pdf" target="_blank">recent paper</a> on monitoring large air pollution changes in cities in India and the UK</div>		
-  </div> 
+  </div> --->
 
   <div class="mySlides fade">
     <img class="centered" src="./images_news/tropomi-ut-no2-amt-2021.png" alt="Image of prevalent sources of VOCs" height="260">
@@ -494,7 +499,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==12) {
+  if (slideIndex==13) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else{
 	   timer=setTimeout(showSlides, 4400, slideIndex);
