@@ -264,11 +264,10 @@ img {vertical-align: middle;}
 	 <br /> <em>[Left to right: Gongda, Rob, Nana, Eloise, Eleanor, Karn, Bex]</em></div>
   </div>
 	
-  <div class="mySlides fade">
+  <!---<div class="mySlides fade">
     <img class="centered" src="images_news/eleanor_smith_ucl_geog_phd_2022.jpg" alt="Photo of Eleanor Smith" height="260">
-     <!---<div class="text">Our first in-person group photo since the start of the pandemic.</div>--->
 	 <div class="text">Eleanor Smith joins the group to start a PhD on the impact of reactive nitrogen on air quality and climate.</div>
-  </div>
+  </div>--->
 	
   <div class="mySlides fade">
     <img class="centered" src="images_news/Group_photo_IGAC_2022.jpeg" alt="Group photo at iCACGP-IGAC Joint Conference in Manchester" height="260">
@@ -517,7 +516,10 @@ function showSlides(n) {
   dots[slideIndex-1].className += " active";
   if (slideIndex==15) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
-   }else{
+   }else if (slideIndex==1) {
+	   timer=setTimeout(showSlides, 8000, slideIndex);
+   }
+	else{
 	   timer=setTimeout(showSlides, 4400, slideIndex);
    }
   /* timer=setTimeout(showSlides, 4250, slideIndex); // Change image every 5 seconds */
