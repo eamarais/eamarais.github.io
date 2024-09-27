@@ -201,6 +201,11 @@ img {vertical-align: middle;}
   <!-- Full-width images with number and caption text -->  
 	
 <div class="mySlides fade">
+    <img class="centered" src="images_news/space-travel-image.jpg" alt="Group photo on UCL campus" height="260">
+	 <div class="text">Eloise on <a href="https://www.bbc.co.uk/programmes/m00237zq" target="_blank">BBC Radio 4's Inside Science</a> discusses environmental concerns of space travel</div>    
+  </div>
+	
+<div class="mySlides fade">
     <img class="centered" src="images_news/Vredefort-Crater-South-Africa.png" alt="Vredeport Crater" height="260">
 	 <div class="text">Report by Eloise halts natural gas production at a UNESCO Heritage Site. <a href="https://www.ucl.ac.uk/geography/news/2024/aug/expert-report-ucl-professor-halts-production-natural-gas-unesco-heritage-site" target="_blank">Link to news article</a></div>
   </div>	
@@ -232,7 +237,7 @@ img {vertical-align: middle;}
   </div>
 	
 <div class="mySlides fade">
-    <img class="centered" src="images_news/vohra-et-al-premature-mortality-tropical-cities.png" alt="Group photo on UCL campus" height="260">
+    <img class="centered" src="images_news/vohra-et-al-premature-mortality-tropical-cities.png" alt="Air pollution in tropical cities" height="260">
 	 <div class="text">Karn speaks to <a href="https://www.bbc.com/future/article/20231017-why-clean-air-is-a-luxury-that-many-cant-afford" target="_blank">the BBC</a> about his research on rapid air quality degradation in tropical cities</div>    
   </div>
 	
@@ -309,10 +314,10 @@ img {vertical-align: middle;}
      <div class="text"><a href="https://theconversation.com/air-pollution-in-fast-growing-african-cities-presents-a-risk-of-premature-death-183944" target="_blank">The Conversation</a> piece on the likely health crisis from rapidly developing African cities.</div>
   </div>
 
-  <div class="mySlides fade">
+  <!---<div class="mySlides fade">
     <img class="centered" src="images_news/WashU_Group_June2022_1.jpg" alt="Group photo at IGC10, Washington University of St. Louis, USA" height="260">
      <div class="text">Members of the group at the International GEOS-Chem User's Meeting in St. Louis, Missouri.</div>		
-  </div>
+  </div>--->
 	
   <div class="mySlides fade">
     <img class="centered" src="images_news/Vohra_SciAdv_2022_tropics_aq_early_deaths.png" alt="Premature deaths in fast-growing tropical cities from exposure to air pollution" height="260">
@@ -529,7 +534,7 @@ function showSlides(n) {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  if (slideIndex==18) {
+  if (slideIndex==19) {
 	  timer=setTimeout(showSlides, 38000, slideIndex);
    }else if (slideIndex==1) {
 	   timer=setTimeout(showSlides, 4400, slideIndex);
