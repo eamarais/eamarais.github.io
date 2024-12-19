@@ -1,0 +1,642 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Space Industry Emissions Tracker</title>
+</head>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Atmospheric Composition and Air Quality Group</title>
+<link rel="stylesheet" href="emissions_style.css" type="text/css" media="screen" />
+<style type="text/css" media="screen">
+	#page { background: url("./themes/default/images/kubrickbgwide.jpg") repeat-y top; border: none; background-size: 100% auto;}
+</style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style type="text/css">
+<!--#headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: #FFFFFF; }
+--></style>
+
+</head>
+
+<body>
+
+<div id="page">
+	
+<style>.transparent-box{background-color: transparent; width: 95%; height: 162px;
+    text-align: center; margin-left:32px; margin-top:-10px; border-color:transparent}</style>
+
+<div id="header">
+
+    <!--Header Image-->
+	<div id="headerimg">
+		
+		<h1><a style="color:black" href="http://maraisresearchgroup.co.uk/"><div class="transparent-box">Atmospheric Composition and Air Quality Group</div></a></h1>
+		<h1><a href="http://maraisresearchgroup.co.uk/"><div class="transparent-box"></div></a></h1>
+
+	</div>
+
+    <!--Navigation bar-->
+    <div id="navmenu" style="display: flex; justify-content: center;">
+        <iframe src="./nav.html" onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+    </div>
+
+</div> 
+
+<hr />
+
+
+<div id="content" class="widecolumn">
+
+
+    <div id="post-1094" class="post">
+
+        <h2>Live Space Industry Emissions Tracker</h2>
+					
+        <div class="entry">
+            
+            <br></br>
+            <label for="datePicker">Please select a date during 2020-2022. Future years will be available in a future update. </label>
+            <input type="date" id="datePicker1" name="datePicker1">
+            <input type="date" id="datePicker2" name="datePicker2">
+            
+            <!-- Map containers -->
+            <div class="map-container">
+                <div id="map1" class="map"></div> <!-- First map container -->
+                <div id="map2" class="map"></div> <!-- Second map container -->
+            </div>
+
+            <!-- Tables for Launch and Re-entry Locations -->
+            <div class="table-container">
+                <div>
+                    <h3>Launch Information (emissions in kilotonnes)</h3>
+                    <table id="launchTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Launch ID</th>
+                                <th>Launch Time (UTC)</th>
+                                <th>Location</th>
+                                <th>Rocket</th>
+                                <th>SMC?</th>
+                                <th>BC</th>
+                                <th>CO</th>
+                                <th>CO<sub>2</sub></th>
+                                <th>H<sub>2</sub>O</th>
+                                <th>Al<sub>2</sub>O<sub>3</sub></th>
+                                <th>Cl<sub>y</sub></th>
+                                <th>NO<sub>x</sub></th>
+                            </tr>
+                        </thead>
+                        <tbody id="launchTableBody">
+                            <!-- Dynamic rows for launch locations will be inserted here -->
+                        </tbody>
+                        <tfoot id="launchTableFoot">
+                            <!-- Totals for launches -->
+                        </tfoot>
+                    </table>
+                </div>
+                <div>
+                    <h3>Re-entry Information (emissions in kilotonnes)</h3>
+                    <table id="reentryTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Object ID</th>
+                                <th>Re-entry Time (UTC)</th>
+                                <th>Location</th>
+                                <th>Reusability</th>
+                                <th>Object Name</th>
+                                <th>Object Category</th>
+                                <th>SMC?</th>
+                                <th>Al<sub>2</sub>O<sub>3</sub></th>
+                                <th>NO<sub>x</sub></th>
+                                <th>BC</th>
+                                <th>Cl<sub>y</sub></th>
+                                <th>Unablated Mass</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reentryTableBody">
+                            <!-- Dynamic rows for re-entry locations will be inserted here -->
+                        </tbody>
+                        <tfoot id="reentryTableFoot">
+                            <!-- Totals for launches -->
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div id="emissionsChart" style="width:100%; height:100%;">
+            </div>
+
+            <script>
+
+                let locations1 = [], locations2 = [];
+                async function fetchEventsData(startDate,endDate) {
+                    try {
+                        // Fetch the data from the API (replace with your actual API URL)
+                        const response1 = await fetch(`https://cbarker.pythonanywhere.com/api/launches?start_date=${startDate}&end_date=${endDate}`); // Replace with your actual API URL
+                        const launchData = await response1.json();
+                        const response2 = await fetch(`https://cbarker.pythonanywhere.com/api/reentries?start_date=${startDate}&end_date=${endDate}`); // Replace with your actual API URL
+                        const reentryData = await response2.json();
+                        const reentriesByCategory = {};
+
+                        const lat = [];
+                        const lon = [];
+                        const text = [];
+                        const id = [];
+                        const BC = [];
+                        const CO = [];
+                        const rocket = [];
+                        const smc = []
+
+                        Object.keys(launchData).forEach(date => {
+                            launchData[date].launches.forEach(launch => {
+                                lat.push(parseFloat(launch.lat));
+                                lon.push(parseFloat(launch.lon));
+                                text.push(launch.site);
+                                id.push(launch.id);
+                                BC.push(launch.emissions.BC);
+                                CO.push(launch.emissions.CO2);
+                                rocket.push(launch.rocket);
+                                smc.push(launch.smc);
+                            });
+                        });
+
+                        Object.keys(reentryData).forEach(date => {
+                            reentryData[date].reentries.forEach(reentry => {
+                                const cat = reentry.reusability;
+
+                                // Initialize category group if it doesn't exist
+                                if (!reentriesByCategory[cat]) {
+                                    reentriesByCategory[cat] = {
+                                        id: [],
+                                        name: cat,
+                                        objname: [],
+                                        lat: [],
+                                        lon: [],
+                                        smc: [],
+                                        category: [],
+                                        color: getColorForCategory(cat), // Assign color based on category
+                                        text: [],
+                                        al: [],
+                                        nox: [],
+                                        unab_mass: []
+                                    };
+                                }
+
+                                // Add reentry data to the category group
+                                reentriesByCategory[cat].id.push(reentry.id);
+                                reentriesByCategory[cat].smc.push(reentry.smc);
+                                reentriesByCategory[cat].lat.push(reentry.lat);
+                                reentriesByCategory[cat].category.push(reentry.category);
+                                reentriesByCategory[cat].lon.push(reentry.lon);
+                                reentriesByCategory[cat].objname.push(reentry.name);
+                                reentriesByCategory[cat].text.push(reentry.site);
+                                reentriesByCategory[cat].al.push(reentry.emissions.Al2O3);
+                                reentriesByCategory[cat].nox.push(reentry.emissions.NOx);
+                                reentriesByCategory[cat].unab_mass.push(reentry.emissions.Mass);
+                            });
+                        });
+                        
+                        // Combine the arrays into the desired structure and update the visualisations.
+                        locations1 = [{lat: lat, lon: lon, text: text, id: id, BC: BC, CO: CO, rocket: rocket, smc: smc}];
+                        locations2 = Object.values(reentriesByCategory);
+                        updateTables();
+                        updateMaps();
+                        updateGraph(startDate,endDate);
+
+                    } catch (error) {
+                        console.error('Error fetching or processing the events data:', error);
+                    }
+                }
+
+                // Helper function to assign colors based on the reusability category
+                function getColorForCategory(cat) {
+                    switch (cat) {
+                        case 'Reusable':
+                            return 'green';
+                        case 'Discarded (known)':
+                            return 'red';
+                        case 'Discarded (approx.)':
+                            return 'blue';
+                        default:
+                            return 'gray'; // Default color for unknown categories
+                    }
+                }
+
+                function updateTables() {
+                    
+                    const table1Body = document.getElementById('launchTableBody');
+                    const table1Foot = document.getElementById('launchTableFoot');
+                    table1Body.innerHTML = '';
+                    table1Foot.innerHTML = '';
+                    let totalBC = 0, totalCO = 0;
+                    locations1[0].id.forEach((location, index) => {
+                        const row = document.createElement('tr');
+                        const BC = locations1[0].BC[index];
+                        const CO = locations1[0].CO[index];
+                        totalBC += BC;
+                        totalCO += CO;
+                        console.log(locations1)
+                        row.innerHTML = `
+                            <td></td>
+                            <td>${location}</td>  
+                            <td></td> 
+                            <td>${locations1[0].text[index]}</td> 
+                            <td>${locations1[0].rocket[index]}</td> 
+                            <td>${locations1[0].smc[index]}</td> 
+                            <td>${locations1[0].BC[index]}</td> 
+                            <td>${locations1[0].CO[index]}</td> 
+                            <td></td> 
+                            <td></td> 
+                            <td></td> 
+                            <td></td> 
+                            <td></td> 
+                        `;
+                        table1Body.appendChild(row);
+                    });
+                    // Add Totals to Launch Table
+                    const totalRow1 = document.createElement('tr');
+                    totalRow1.innerHTML = `
+                        <td>Total</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>${totalBC.toFixed(1)}</td>
+                        <td>${totalCO.toFixed(1)}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    `;
+                    table1Foot.appendChild(totalRow1);
+
+                    // Populate Re-entry Table
+                    const table2Body = document.getElementById('reentryTableBody');
+                    const table2Foot = document.getElementById('reentryTableFoot');
+                    table2Body.innerHTML = '';
+                    table2Foot.innerHTML = '';
+                    let totalal = 0, totalnox = 0, totalmass = 0;
+                    locations2.forEach(group => {
+                        group.id.forEach((location, index) => {
+                            const row = document.createElement('tr');
+                            const al = group.al[index];
+                            const nox = group.nox[index];
+                            const mass = group.unab_mass[index];
+                            totalal += al;
+                            totalnox += nox;
+                            totalmass += mass;
+                            row.innerHTML = `
+                                <td></td>
+                                <td>${location}</td> 
+                                <td></td>
+                                <td>${group.text[index]}</td>
+                                <td>${group.name}</td>
+                                <td>${group.objname}</td>
+                                <td>${group.category}</td>
+                                <td>${group.smc}</td>
+                                <td>${al}</td>
+                                <td>${nox}</td>
+                                <td></td>
+                                <td></td>
+                                <td>${mass}</td>
+                            `;
+                            table2Body.appendChild(row);
+                        });
+                    });
+
+                    // Add Totals to Re-entry Table
+                    const totalRow2 = document.createElement('tr');
+                    totalRow2.innerHTML = `
+                        <td>Total</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>${totalal.toFixed(1)}</td>
+                        <td>${totalnox.toFixed(1)}</td>
+                        <td></td>
+                        <td></td>
+                        <td>${totalmass.toFixed(1)}</td>
+                    `;
+                    table2Foot.appendChild(totalRow2);
+                }
+
+                function updateMaps() {
+                    const latitudes1 = locations1.map(d => d.lat).flat();
+                    const longitudes1 = locations1.map(d => d.lon).flat();
+                    const labels1 = locations1.map(d => d.text).flat();
+
+                    const mapData1 = latitudes1.length > 0 && longitudes1.length > 0 ? [{
+                        type: 'scattergeo',
+                        lat: latitudes1,
+                        lon: longitudes1,
+                        text: labels1,
+                        mode: 'markers+text',
+                        marker: {
+                        size: 12,
+                        color: 'blue',
+                        symbol: 'x',
+                        },
+                        textfont: {
+                            size: 15,  // Font size for the labels
+                            color: 'black',  // Color of the text
+                            weight: 'bold',
+                        },
+                        textposition: 'right',
+                        showlegend: false
+                    }] : [{
+                        type: 'scattergeo',
+                        mode: 'markers', // Keep the map but without data points
+                        marker: { size: 0 }, // Invisible markers
+                    }];
+                    const mapData1_legend = latitudes1.length > 0 && longitudes1.length > 0 ? [{
+                        type: 'scattergeo',
+                        lat: [1],
+                        lon: [1],
+                        mode: 'markers',
+                        name: "",
+                        marker: {
+                        size: 12,
+                        color: 'transparent',
+                        symbol: 'x',
+                        },
+                        showlegend: true
+                    }] : [{
+                        type: 'scattergeo',
+                        mode: 'markers', // Keep the map but without data points
+                        marker: { size: 0 }, // Invisible markers
+                    }];
+
+                    const mapData2 = locations2.length > 0 ? locations2.map(location => ({
+                        type: 'scattergeo',
+                        mode: 'markers+text',
+                        name: location.name,
+                        lat: location.lat,
+                        lon: location.lon,
+                        marker: {
+                            size: 12,
+                            color: location.color,
+                            symbol: 'x'
+                        },
+                        textfont: {
+                            size: 15,  // Font size for the labels
+                            color: 'black',  // Color of the text
+                            weight: 'bold',
+                        },
+                        textposition: 'right',
+                        text: location.text,
+                        showlegend: false
+                    })) : [{
+                        type: 'scattergeo',
+                        mode: 'markers+text', // Keep the map but without data points
+                        marker: { size: 0 } // Invisible markers
+                    }];
+
+                    const mapData2_legend = locations2.length > 0 ? locations2.map(location => ({
+                        type: 'scattergeo',
+                        mode: 'markers',
+                        name: location.name,
+                        lat: location.lat,
+                        lon: location.lon,
+                        marker: {
+                            size: 12,
+                            color: location.color,
+                            symbol: 'x'
+                        },
+                        showlegend: true
+                    })) : [{
+                        type: 'scattergeo',
+                        mode: 'markers', // Keep the map but without data points
+                        marker: { size: 0 }, // Invisible markers
+                        showlegend: true
+                    }];
+
+                    // Common layout configuration
+                    const commonLayout = {
+                        geo: {
+                            resolution: 100, 
+                            projection: { type: 'robinson' },
+                            showland: true,
+                            landcolor: 'rgb(217, 217, 217)',
+                            showocean: true,
+                            oceancolor: 'rgb(204, 233, 255)',
+                            showcountries: true,
+                            countrycolor: 'rgb(50, 50, 50)',
+                            showsubunits: true,
+                            subunitcolor: 'rgb(150, 150, 150)',
+                            showgrid: true,
+                            gridcolor: 'rgb(220, 220, 220)',
+                            gridwidth: 2,
+                            griddash: 'dash', // Dashed gridlines for both axes
+                            lataxis: {
+                                showgrid: true,  // Gridline for latitude axis
+                                gridcolor: 'rgb(220, 220, 220)', // Optional: specify grid color
+                                griddash: 'dash', // Dashed gridline style
+                                tickmode: 'array',
+                                ticks: '',
+                                ticklen: 10,
+                                tickcolor: 'rgb(220, 220, 220)',
+                                showticklabels: false,
+                                zeroline: false
+                            },
+                            lonaxis: {
+                                showgrid: true,  // Gridline for longitude axis
+                                gridcolor: 'rgb(220, 220, 220)', // Optional: specify grid color
+                                griddash: 'dash', // Dashed gridline style
+                                tickmode: 'array',
+                                ticks: '',
+                                ticklen: 10,
+                                tickcolor: 'rgb(220, 220, 220)',
+                                showticklabels: false,
+                                zeroline: false
+                            }
+                        },
+                        margin: { t: 50, b: 0, l: 0, r: 0 }, // Adjust top margin for title
+                        title: { font: { size: 18 }, xanchor: 'center', yanchor: 'top', y: 0 }, // Adjust title position
+                        showlegend: true,
+                        legend: {
+                            x: 0.5,
+                            y: -0.05,
+                            xanchor: 'center',
+                            orientation: 'h',
+                            traceorder: 'normal',
+                            font: { size: 14 },
+                            bgcolor: 'rgba(255, 255, 255, 0.5)',  // Slight transparent background
+                        },
+                    };
+
+                    // Add individual titles
+                    const layout1 = { ...commonLayout, title: { text: 'Launches', font: { size: 18 } }};
+                    const layout2 = { ...commonLayout, title: { text: 'Re-entries', font: { size: 18 } } };
+
+                    // Combine map data with legend data for each plot
+                    const combinedMapData1 = [...mapData1, ...mapData1_legend];
+                    const combinedMapData2 = [...mapData2, ...mapData2_legend];
+
+                    // Render the maps with their legends
+                    Plotly.newPlot('map1', combinedMapData1, layout1);
+                    Plotly.newPlot('map2', combinedMapData2, layout2);
+                }
+                
+                function updateGraph(startDate,endDate) {
+
+                    let totalBC = 0, totalCO = 0;
+                    locations1[0].id.forEach((location, index) => {
+                        const row = document.createElement('tr');
+                        const BC = locations1[0].BC[index];
+                        const CO = locations1[0].CO[index];
+                        totalBC += BC;
+                        totalCO += CO;
+                    });
+
+                    let totalal = 0, totalnox = 0, totalmass = 0;
+                    locations2.forEach(group => {
+                        group.id.forEach((location, index) => {
+                            const row = document.createElement('tr');
+                            const al = group.al[index];
+                            const nox = group.nox[index];
+                            const mass = group.unab_mass[index];
+                            totalal += al;
+                            totalnox += nox;
+                            totalmass += mass;
+                        });
+                    });
+                    
+                    // Prepare the data for Plotly
+                    const labels = ['BC', 'CO', 'Re-entry Al<sub>2</sub>O<sub>3</sub>', 'Re-entry NO<sub>x</sub>', 'Unablated Re-entry Mass'];
+                    const data = [totalBC, totalCO, totalal, totalnox, totalmass];
+                    const maxYValue = Math.max(...data);
+
+                    const trace = {
+                        x: labels,
+                        y: data,
+                        type: 'bar',  // Bar chart (you can change to line, pie, etc.)
+                        marker: {
+                            color: 'rgba(75, 192, 192, 0.7)'
+                        }
+                    };
+
+                    const layout = {
+                        title: `Emissions between ${startDate} and ${endDate}`,
+                        xaxis: {
+                            title: 'Species'
+                        },
+                        yaxis: {
+                            title: 'Mass [kt]',
+                            range: [0,maxYValue]
+                        },
+                        autosize: true,  // Automatically resize the chart
+                        responsive: true // Ensure the chart resizes with the window
+                    };
+
+                    // Plot the chart inside the 'emissionsChart' div
+                    Plotly.newPlot('emissionsChart', [trace], layout);
+
+                }
+                
+                // Plot a default date when the page opens, then update when the date changes.
+                document.addEventListener('DOMContentLoaded', () => {
+                    const datePicker1 = document.getElementById('datePicker1'); // Start date picker
+                    const datePicker2 = document.getElementById('datePicker2'); // End date picker
+                    let startDate = '2020-01-01';
+                    let endDate = '2025-01-01';
+                    datePicker1.value = startDate;
+                    datePicker2.value = endDate;
+                    fetchEventsData(startDate,endDate); // Fetch data for the default date
+
+                    // Event listeners for date pickers
+                    datePicker1.addEventListener('change', (event) => {
+                        startDate= event.target.value;
+                        if (startDate) {
+                            fetchEventsData(startDate,endDate);
+                        }
+                    });
+                    datePicker2.addEventListener('change', (event) => {
+                        endDate = event.target.value;
+                        if (endDate) {
+                            fetchEventsData(startDate,endDate);
+                        }
+                    });
+                });
+ 
+            </script> 
+
+            <h2>Frequently Asked Questions</h2>
+
+            <div id="faqs-container"></div>
+
+            <script>
+                const faqData = [ 
+                    { question: "What are these chemicals?",
+                    answer: "NO<sub>x</sub> is nitrogen oxides, H<sub>2</sub>O is water vapour, CO<sub>2</sub> is carbon dioxide, BC is black carbon or soot, Al<sub>2</sub>O<sub>3</sub> is aluminium oxide or alumina, and Cl<sub>y</sub> is a family of chlorine compounds. NO<sub>x</sub>, H<sub>2</sub>O, CO<sub>2</sub>, and Cl<sub>y</sub> are released as gases, BC and Al<sub>2</sub>O<sub>3</sub> as particles."
+                    },
+                    { question: "How is this data calculated?",
+                    answer: "Our calculations are based on the current best scientific knowledge available for emissions from rocket launch and object re-entries. We include the effects of a changing chemical environment with altitude in our launch emissions, and use object-specific ablation profiles to calculate alumina emissions from object re-entries. We calculate emissions globally up to a maximum altitude of 80 km. We use x and y sources to gather up-to-date details on rocket launches and object re-entries."
+                    },
+                    { question: "Where can I find the original methodology and data?",
+                    answer: "You can find further details in our study published in Nature Scientific Data: Global 3D rocket launch and re-entry air pollutant and carbon dioxide emissions for 2020-2022</strong>. C. R. Barker, E. A. Marais (2024). doi:10.5522/04/26325382. [<a href='https://doi.org/10.5522/04/26325382' target='_blank' rel='noopener noreferrer'>Data</a>]. [<a href='https://www.nature.com/articles/s41597-024-03910-z' target='_blank' rel='noopener noreferrer'>Publication</a>]</p>"
+                    }
+                ];
+
+                const faqsContainer = document.getElementById('faqs-container');
+
+                faqData.map(function(item) {
+
+                    let article = document.createElement('article');
+                    article.classList.add('faq-item');
+
+                    const markup = `
+                            <div class="item-question">
+                                <span class="question-text">${item.question}</span>
+                                <span class="arrows-container">
+                                    <span class="expand">▼</span>
+                                    <span class="close">▲</span>
+                                </span>
+                            </div>
+                            <div class="item-answer">
+                                <span>${item.answer}</span>
+                            </div>
+                    `;
+                    
+                    article.innerHTML = markup;
+                    faqsContainer.append(article);
+                });
+
+                const toggleButtons = document.querySelectorAll('.arrows-container');
+                    
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        const faqItem = e.currentTarget.parentElement.parentElement;
+                        faqItem.classList.toggle("show-answer");
+                    });
+                });
+
+            </script>
+
+            <p>
+                Developed by <a href="https://profiles.ucl.ac.uk/93616-connor-barker" target="_blank" rel="noopener noreferrer">Connor Barker</a> (UCL) and <a href="https://profiles.ucl.ac.uk/77783-eloise-marais" target="_blank" rel="noopener noreferrer">Eloise Marais</a> (UCL), in collaboration with <a href="https://www.cfa.harvard.edu/people/jonathan-mcdowell" target="_blank" rel="noopener noreferrer">Jonathan McDowell</a> (Harvard-Smithsonian Center for Astrophysics). Interested in using the data or spot any room for improvements? Please reach out to Connor Barker at <a href= "mailto:name@email.com">connor.barker@ucl.ac.uk</a>.
+            </p>
+            <p>
+                <strong>Funding Disclaimer:</strong> This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No. 851854). <a href="https://cordis.europa.eu/project/id/851854" target="_blank" rel="noopener noreferrer">European Commission project page</a>.
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<hr />
+<div id="footer"></div>
+<!-- Gorgeous design by Michael Heilemann - http://binarybonsai.com/kubrick/ -->
+<script type="text/javascript' src='./js/wp-embed.min.js"></script>
+</body>
+</html>
