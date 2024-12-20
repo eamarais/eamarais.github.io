@@ -307,9 +307,9 @@ body {
 	}
 
 .widecolumn {
-	padding: 0px 0 20px 0;
-	margin: 80px 0 0 100px;
-	width: 800px;
+	padding: 0px 0 10px 0;
+	margin: 80px 0 0 110px;
+	width: 875px;
 	}
 
 .widecolumnintro  {
@@ -371,9 +371,9 @@ body {
 
 .transparent-box{
 	background-color: transparent; 
-	width: 1048px; 
+	width: 1090px; 
 	height: 162px; 
-	margin-left:11px; 
+	margin-left:13px; 
 	margin-top:-42px; 
 	border-color:transparent}
 
