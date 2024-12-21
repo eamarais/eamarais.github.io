@@ -106,7 +106,6 @@
                                 <th>Date</th>
                                 <th>Object ID</th>
                                 <th>Re-entry Time (UTC)</th>
-                                <th>Location</th>
                                 <th>Reusability</th>
                                 <th>Object Name</th>
                                 <th>Object Category</th>
@@ -142,24 +141,38 @@
                         const response2 = await fetch(`https://cbarker.pythonanywhere.com/api/reentries?start_date=${startDate}&end_date=${endDate}`); // Replace with your actual API URL
                         const reentryData = await response2.json();
                         const reentriesByCategory = {};
-
-                        const lat = [];
-                        const lon = [];
-                        const text = [];
-                        const id = [];
-                        const BC = [];
-                        const CO = [];
+                        
+                        const launch_date = [];
+                        const launch_time = [];
+                        const lat    = [];
+                        const lon    = [];
+                        const text   = [];
+                        const id     = [];
+                        const BC     = [];
+                        const CO     = [];
+                        const CO2    = [];
+                        const H2O    = [];
+                        const Al2O3  = [];
+                        const Cly    = [];
+                        const NOx    = [];
                         const rocket = [];
-                        const smc = []
+                        const smc    = [];
 
                         Object.keys(launchData).forEach(date => {
                             launchData[date].launches.forEach(launch => {
+                                launch_date.push(launch.date);
+                                launch_time.push(launch.time)
                                 lat.push(parseFloat(launch.lat));
                                 lon.push(parseFloat(launch.lon));
                                 text.push(launch.site);
                                 id.push(launch.id);
                                 BC.push(launch.emissions.BC);
-                                CO.push(launch.emissions.CO2);
+                                CO.push(launch.emissions.CO);
+                                CO2.push(launch.emissions.CO2);
+                                H2O.push(launch.emissions.H2O);
+                                Al2O3.push(launch.emissions.Al2O3);
+                                Cly.push(launch.emissions.Cly);
+                                NOx.push(launch.emissions.NOx);
                                 rocket.push(launch.rocket);
                                 smc.push(launch.smc);
                             });
@@ -167,20 +180,23 @@
 
                         Object.keys(reentryData).forEach(date => {
                             reentryData[date].reentries.forEach(reentry => {
+                                
                                 const cat = reentry.reusability;
-
+                                console.log(reentry.reusability)
                                 // Initialize category group if it doesn't exist
                                 if (!reentriesByCategory[cat]) {
                                     reentriesByCategory[cat] = {
+                                        date: [],
                                         id: [],
+                                        time: [],
                                         name: cat,
                                         objname: [],
                                         lat: [],
                                         lon: [],
                                         smc: [],
+                                        name: [],
                                         category: [],
                                         color: getColorForCategory(cat), // Assign color based on category
-                                        text: [],
                                         al: [],
                                         nox: [],
                                         unab_mass: []
@@ -188,21 +204,24 @@
                                 }
 
                                 // Add reentry data to the category group
+                                reentriesByCategory[cat].date.push(reentry.date);
                                 reentriesByCategory[cat].id.push(reentry.id);
+                                reentriesByCategory[cat].time.push(reentry.time);
                                 reentriesByCategory[cat].smc.push(reentry.smc);
                                 reentriesByCategory[cat].lat.push(reentry.lat);
+                                reentriesByCategory[cat].name.push(reentry.reusability);
                                 reentriesByCategory[cat].category.push(reentry.category);
                                 reentriesByCategory[cat].lon.push(reentry.lon);
                                 reentriesByCategory[cat].objname.push(reentry.name);
-                                reentriesByCategory[cat].text.push(reentry.site);
                                 reentriesByCategory[cat].al.push(reentry.emissions.Al2O3);
                                 reentriesByCategory[cat].nox.push(reentry.emissions.NOx);
-                                reentriesByCategory[cat].unab_mass.push(reentry.emissions.Mass);
+                                reentriesByCategory[cat].unab_mass.push(reentry.emissions.Unablated_Mass);
                             });
                         });
                         
                         // Combine the arrays into the desired structure and update the visualisations.
-                        locations1 = [{lat: lat, lon: lon, text: text, id: id, BC: BC, CO: CO, rocket: rocket, smc: smc}];
+                        locations1 = [{date: launch_date, time: launch_time, lat: lat, lon: lon, text: text, id: id, rocket: rocket, smc: smc,
+                                       BC: BC, CO: CO, CO2: CO2, H2O, H2O, Al2O3, Al2O3, Cly: Cly, NOx, NOx}];
                         locations2 = Object.values(reentriesByCategory);
                         updateTables();
                         updateMaps();
@@ -233,28 +252,39 @@
                     const table1Foot = document.getElementById('launchTableFoot');
                     table1Body.innerHTML = '';
                     table1Foot.innerHTML = '';
-                    let totalBC = 0, totalCO = 0;
+                    let totalBC = 0, totalCO = 0, totalCO2 = 0, totalH2O = 0;
+                    let totalAl2O3 = 0, totalCly = 0, totalNOX = 0;
                     locations1[0].id.forEach((location, index) => {
                         const row = document.createElement('tr');
                         const BC = locations1[0].BC[index];
                         const CO = locations1[0].CO[index];
-                        totalBC += BC;
-                        totalCO += CO;
+                        const CO2 = locations1[0].CO2[index];
+                        const H2O = locations1[0].H2O[index];
+                        const Al2O3 = locations1[0].Al2O3[index];
+                        const Cly = locations1[0].Cly[index];
+                        const NOx = locations1[0].NOx[index];
+                        totalBC    += BC;
+                        totalCO    += CO;
+                        totalCO2   += CO2;
+                        totalH2O   += H2O;
+                        totalAl2O3 += Al2O3;
+                        totalCly   += Cly;
+                        totalNOX   += NOx;
                         console.log(locations1)
                         row.innerHTML = `
-                            <td></td>
+                            <td>${locations1[0].date[index]}</td> 
                             <td>${location}</td>  
-                            <td></td> 
+                            <td>${locations1[0].time[index]}</td> 
                             <td>${locations1[0].text[index]}</td> 
                             <td>${locations1[0].rocket[index]}</td> 
                             <td>${locations1[0].smc[index]}</td> 
-                            <td>${locations1[0].BC[index]}</td> 
-                            <td>${locations1[0].CO[index]}</td> 
-                            <td></td> 
-                            <td></td> 
-                            <td></td> 
-                            <td></td> 
-                            <td></td> 
+                            <td>${locations1[0].BC[index].toFixed(1)}</td> 
+                            <td>${locations1[0].CO[index].toFixed(1)}</td> 
+                            <td>${locations1[0].CO2[index].toFixed(1)}</td> 
+                            <td>${locations1[0].H2O[index].toFixed(1)}</td> 
+                            <td>${locations1[0].Al2O3[index].toFixed(1)}</td> 
+                            <td>${locations1[0].Cly[index].toFixed(1)}</td> 
+                            <td>${locations1[0].NOx[index].toFixed(1)}</td> 
                         `;
                         table1Body.appendChild(row);
                     });
@@ -267,13 +297,13 @@
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
-                        <td>${totalBC.toFixed(1)}</td>
-                        <td>${totalCO.toFixed(1)}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>${totalBC.toFixed(2)}</td>
+                        <td>${totalCO.toFixed(2)}</td>
+                        <td>${totalCO2.toFixed(2)}</td>
+                        <td>${totalH2O.toFixed(2)}</td>
+                        <td>${totalAl2O3.toFixed(2)}</td>
+                        <td>${totalCly.toFixed(2)}</td>
+                        <td>${totalNOX.toFixed(2)}</td>
                     `;
                     table1Foot.appendChild(totalRow1);
 
@@ -293,19 +323,18 @@
                             totalnox += nox;
                             totalmass += mass;
                             row.innerHTML = `
-                                <td></td>
+                                <td>${group.date[index]}</td>
                                 <td>${location}</td> 
+                                <td>${group.time[index].toFixed(2)}</td>
+                                <td>${group.name[index]}</td>
+                                <td>${group.objname[index]}</td>
+                                <td>${group.category[index]}</td>
+                                <td>${group.smc[index]}</td>
+                                <td>${al.toFixed(2)}</td>
+                                <td>${nox.toFixed(2)}</td>
                                 <td></td>
-                                <td>${group.text[index]}</td>
-                                <td>${group.name}</td>
-                                <td>${group.objname}</td>
-                                <td>${group.category}</td>
-                                <td>${group.smc}</td>
-                                <td>${al}</td>
-                                <td>${nox}</td>
                                 <td></td>
-                                <td></td>
-                                <td>${mass}</td>
+                                <td>${mass.toFixed(2)}</td>
                             `;
                             table2Body.appendChild(row);
                         });
@@ -321,12 +350,11 @@
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
-                        <td>-</td>
-                        <td>${totalal.toFixed(1)}</td>
-                        <td>${totalnox.toFixed(1)}</td>
+                        <td>${totalal.toFixed(2)}</td>
+                        <td>${totalnox.toFixed(2)}</td>
                         <td></td>
                         <td></td>
-                        <td>${totalmass.toFixed(1)}</td>
+                        <td>${totalmass.toFixed(2)}</td>
                     `;
                     table2Foot.appendChild(totalRow2);
                 }
@@ -549,7 +577,7 @@
                     const datePicker1 = document.getElementById('datePicker1'); // Start date picker
                     const datePicker2 = document.getElementById('datePicker2'); // End date picker
                     let startDate = '2020-01-01';
-                    let endDate = '2025-01-01';
+                    let endDate = '2020-01-10';
                     datePicker1.value = startDate;
                     datePicker2.value = endDate;
                     fetchEventsData(startDate,endDate); // Fetch data for the default date
