@@ -254,16 +254,16 @@
 			<!-- Table for Re-entry Locations -->
 			<div class="table-container">
 				<div>
-					<h3>Re-entry Information (emissions in kilotonnes). SMC = Satellite Megaconstellation.</h3>
+					<h3>Re-entry Information (emissions in tonnes). SMC = Satellite Megaconstellation. BC and Cl<sub>y</sub> will be added shortly.</h3>
 					<table id="reentryTable">
 						<thead>
 							<tr>
 								<th>Date</th>
-								<th>Object ID</th>
+								<th>ID</th>
 								<th>Time (UTC)</th>
 								<th>Reusability</th>
-								<th>Object Name</th>
-								<th>Object Category</th>
+								<th>Name</th>
+								<th>Category</th>
 								<th>SMC</th>
 								<th>Al<sub>2</sub>O<sub>3</sub></th>
 								<th>NO<sub>x</sub></th>
@@ -350,9 +350,9 @@
 								reentriesByCategory[cat].category.push(reentry.category);
 								reentriesByCategory[cat].lon.push(reentry.lon);
 								reentriesByCategory[cat].objname.push(reentry.name);
-								reentriesByCategory[cat].al.push(reentry.emissions.Al2O3);
-								reentriesByCategory[cat].nox.push(reentry.emissions.NOx);
-								reentriesByCategory[cat].unab_mass.push(reentry.emissions.Unablated_Mass);
+								reentriesByCategory[cat].al.push(reentry.emissions.Al2O3 * 1000);
+								reentriesByCategory[cat].nox.push(reentry.emissions.NOx * 1000);
+								reentriesByCategory[cat].unab_mass.push(reentry.emissions.Unablated_Mass * 1000);
 							});
 						});
 						
@@ -652,7 +652,7 @@
 							title: 'Species'
 						},
 						yaxis: {
-							title: 'Mass [kt]',
+							title: 'Mass [t]',
 							range: [0,maxYValue]
 						},
 						autosize: true,  // Automatically resize the chart

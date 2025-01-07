@@ -255,7 +255,7 @@
 			<!-- Table for Launch Locations -->
 			<div class="table-container">
 				<div>
-					<h3>Launch Information (emissions in kilotonnes). SMC = Satellite Megaconstellation.</h3>
+					<h3>Launch Information (emissions in tonnes). SMC = Satellite Megaconstellation.</h3>
 					<table id="launchTable">
 						<thead>
 							<tr>
@@ -340,13 +340,13 @@
 								lon.push(parseFloat(launch.lon));
 								text.push(launch.site);
 								id.push(launch.id);
-								BC.push(launch.emissions.BC);
-								CO.push(launch.emissions.CO);
-								CO2.push(launch.emissions.CO2);
-								H2O.push(launch.emissions.H2O);
-								Al2O3.push(launch.emissions.Al2O3);
-								Cly.push(launch.emissions.Cly);
-								NOx.push(launch.emissions.NOx);
+								BC.push(launch.emissions.BC * 1000);
+								CO.push(launch.emissions.CO * 1000);
+								CO2.push(launch.emissions.CO2 * 1000);
+								H2O.push(launch.emissions.H2O * 1000);
+								Al2O3.push(launch.emissions.Al2O3 * 1000);
+								Cly.push(launch.emissions.Cly * 1000);
+								NOx.push(launch.emissions.NOx * 1000);
 								rocket.push(launch.rocket);
 								smc.push(launch.smc);
 							});
@@ -464,7 +464,7 @@
 						row.innerHTML = `
 							<td>${locations1[0].date[index]}</td> 
 							<td>${location}</td>  
-							<td>${locations1[0].time[index]}</td> 
+							<td>${locations1[0].time[index].toFixed(2)}</td> 
 							<td>${locations1[0].text[index]}</td> 
 							<td>${locations1[0].rocket[index]}</td> 
 							<td>${locations1[0].smc[index]}</td> 
@@ -487,13 +487,13 @@
 						<td>-</td>
 						<td>-</td>
 						<td>-</td>
-						<td>${totalBC.toFixed(2)}</td>
-						<td>${totalCO.toFixed(2)}</td>
-						<td>${totalCO2.toFixed(2)}</td>
-						<td>${totalH2O.toFixed(2)}</td>
-						<td>${totalAl2O3.toFixed(2)}</td>
-						<td>${totalCly.toFixed(2)}</td>
-						<td>${totalNOx.toFixed(2)}</td>
+						<td>${totalBC.toFixed(1)}</td>
+						<td>${totalCO.toFixed(1)}</td>
+						<td>${totalCO2.toFixed(1)}</td>
+						<td>${totalH2O.toFixed(1)}</td>
+						<td>${totalAl2O3.toFixed(1)}</td>
+						<td>${totalCly.toFixed(1)}</td>
+						<td>${totalNOx.toFixed(1)}</td>
 					`;
 					table1Foot.appendChild(totalRow1);
 				}
@@ -651,7 +651,7 @@
 							title: 'Species'
 						},
 						yaxis: {
-							title: 'Mass [kt]',
+							title: 'Mass [t]',
 							range: [0,maxYValue]
 						},
 						autosize: true,  // Automatically resize the chart
