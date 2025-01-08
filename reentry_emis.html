@@ -476,6 +476,30 @@
 				}
 
 				function updateTables() {
+					
+					// Flatten all groups into a single array of rows (with date sorting)
+					let allRows = [];
+					locations2.forEach(group => {
+						group.id.forEach((location, index) => {
+							const row = {
+								date: group.date[index],
+								location: location,
+								time: group.time[index],
+								name: group.name[index],
+								objname: group.objname[index],
+								category: group.category[index],
+								smc: group.smc[index],
+								al: group.al[index],
+								nox: group.nox[index],
+								unab_mass: group.unab_mass[index],
+								groupName: group.name[index] // Keep track of the group name for later
+							};
+							allRows.push(row);
+						});
+					});
+
+					// Sort rows by date
+					allRows.sort((a, b) => new Date(a.date) - new Date(b.date));  // Ensure date is sorted from earliest to latest
 
 					// Populate Re-entry Table
 					const table2Body = document.getElementById('reentryTableBody');
@@ -483,31 +507,33 @@
 					table2Body.innerHTML = '';
 					table2Foot.innerHTML = '';
 					let totalal = 0, totalnox = 0, totalmass = 0;
-					locations2.forEach(group => {
-						group.id.forEach((location, index) => {
-							const row = document.createElement('tr');
-							const al = group.al[index];
-							const nox = group.nox[index];
-							const mass = group.unab_mass[index];
-							totalal += al;
-							totalnox += nox;
-							totalmass += mass;
-							row.innerHTML = `
-								<td>${group.date[index]}</td>
-								<td>${location}</td> 
-								<td>${group.time[index].toFixed(2)}</td>
-								<td>${group.name[index]}</td>
-								<td class="wrap-text">${group.objname[index]}</td>
-								<td>${group.category[index]}</td>
-								<td>${group.smc[index]}</td>
-								<td>${al.toFixed(2)}</td>
-								<td>${nox.toFixed(2)}</td>
-								<td></td>
-								<td></td>
-								<td>${mass.toFixed(2)}</td>
+
+					allRows.forEach(row => {
+						const { date, location, time, name, objname, category, smc, al, nox, unab_mass } = row;
+						totalal += al;
+						totalnox += nox;
+						totalmass += unab_mass;
+
+						
+						const tableRow = document.createElement('tr');
+						totalal += al;
+						totalnox += nox;
+						totalmass += unab_mass;
+						tableRow.innerHTML = `
+							<td>${date}</td>
+							<td>${location}</td> 
+							<td>${time.toFixed(2)}</td>
+							<td>${name}</td>
+							<td class="wrap-text">${objname}</td>
+							<td>${category}</td>
+							<td>${smc}</td>
+							<td>${al.toFixed(2)}</td>
+							<td>${nox.toFixed(2)}</td>
+							<td></td>
+							<td></td>
+							<td>${unab_mass.toFixed(2)}</td>
 							`;
-							table2Body.appendChild(row);
-						});
+						table2Body.appendChild(tableRow);
 					});
 
 					// Add Totals to Re-entry Table
@@ -535,7 +561,6 @@
 					let plotlyData = [];
 					Object.keys(locations2).forEach(locationGroup => {
 						const groupData = locations2[locationGroup];
-						console.log(groupNames[locationGroup]);
 						plotlyData.push({
 							type: 'scattergeo',
 							mode: 'markers',
