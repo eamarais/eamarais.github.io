@@ -5,37 +5,17 @@
 <title>Object Re-entry Emissions</title>
 </head>
 
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
-
-
-
 <head profile="http://gmpg.org/xfn/11">
-
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-
-
 <title>Atmospheric Composition and Air Quality Group</title>
-
-
 <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
-
-
 <style type="text/css" media="screen">
-
-
-
 	#page { background: url("./themes/default/images/kubrickbgwide.jpg") repeat-y top; border: none; }
-
-
-
 </style>
-
-
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="//unpkg.com/globe.gl"></script>
 	<!-- begin gallery scripts -->
 
     <link rel="stylesheet" href="./plugins/featured-content-gallery/css/jd.gallery.css.php" type="text/css" media="screen" charset="utf-8"/>
@@ -53,15 +33,14 @@
 <!---<style type="text/css"></style>
 #headerimg h1 a, #headerimg h1 a:visited, #headerimg .description { color: #FFFFFF; }
 --->
+
 </head>
 
 <body>
 
 <div id="page">
 
-
 <!---<style>.color-box{background-color: white; width: 917px; height: 42px; margin-left:32px; margin-top:-52px; border-color:black; border-style:solid; border-width:1px}</style>
-	
 <style>.transparent-box{background-color: transparent; width: 917px; height: 162px; margin-left:32px; margin-top:-42px; border-color:transparent}</style>--->
 	
 <div id="header">
@@ -69,74 +48,714 @@
 	<div id="headerimg">
 		
 		<h1><a style="color:black" href="http://maraisresearchgroup.co.uk/"><div class="transparent-box">Atmospheric Composition and Air Quality Group</div></a></h1>
-		
 		<h1><a href="http://maraisresearchgroup.co.uk/"><div class="transparent-box"></div></a></h1>
 
 		<div class="description"></div>
-
 	</div>
 
 <!--Navigation bar-->
-<div id="navmenu">
-
-<iframe src="./nav.html" onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
-	
-</div>
+	<div id="navmenu">
+		<iframe src="./nav.html" onload="this.before((this.contentDocument.body||this.contentDocument).children[0]);this.remove()"></iframe>
+	</div>
 
 </div>
 
 <hr />
 
 
-	<div id="content" class="widecolumn">
+<div id="content" class="widecolumn">
 
-				<div class="post" id="post-3">
+	<div class="post" id="post-3">
 			<span id="top"><h2>Emissions from Artificial Object Re-entries</h2>
-				<br />
-				<h2>Content coming soon</h2>
 				<div class="entry">	
 				
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-				
-<style>.table {
-    border:none;
-    border-collapse: collapse;
-
-}
-
-table td {
-    border-left: 1px solid #000;
-    border-right: 1px solid #000;
-}
-
-table td:first-child {
-    border-left: none;
-}
-
-table td:last-child {
-    border-right: none;
-}</style>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 					
-				
+	<style>
+
+		.wrap-text {
+			white-space: normal;
+			word-wrap: break-word;
+			max-width: 500px; /* Adjust the width as needed */
+		}
+		
+		/* Container to align the maps side by side */
+		.map-container {
+			display: flex;
+			justify-content: space-between;
+			gap: 20px;
+			padding: 20px;
+						/* Ensure container size is constrained */
+			width: 100%; /* or set a specific width like 80% if desired */
+			height: 100%; /* You can adjust this as needed */
+			box-sizing: border-box; /* Ensure padding is included in the container size */
+		}
+
+		/* Prevent flex items from stretching */
+		.globe-container {
+			flex-shrink: 0;
+			flex-grow: 0;
+			width: 100%; /* Ensure it fills the available space */
+			height: 100%; /* Ensure it fills the available height */
+		}
+		
+		/* Prevent flex items from stretching */
+		.bar-container {
+			width: 100%; /* Ensure it fills the available space */
+			height: 100%; /* Ensure it fills the available height */
+		}
+
+        /* Style for the tabs */
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .tab:hover {
+            background-color: #ddd;
+        }
+
+        .active-tab {
+            background-color: #ccc;
+            font-weight: bold;
+        }
+
+        /* Initially hide both containers */
+        .globe-container, .map-container, .bar-container {
+            display: none;
+        }
+
+        /* Show active container */
+        .active-container {
+            display: block;
+        }
+
+		.map {
+			flex: 1;
+			height: 100%;
+		}
+
+		.globe {
+			flex: 1;
+			height: 100%;
+		}
+		
+		.bar {
+			width: 100%;
+		}
+
+		/* Container to align the tables side by side */
+		.table-container {
+			display: flex;
+			justify-content: space-between;
+			gap: 20px;
+		}
+
+		/* Table styling */
+		table {
+			width: 100%;
+			margin-top: 20px;
+			border-collapse: collapse;
+			padding: 10px;
+			white-space: nowrap;
+		}
+
+		th, td {
+			padding: 10px;
+			text-align: left;
+			border: 1px solid #ddd;
+			white-space: nowrap;
+		}
+
+		th {
+			background-color: #f4f4f4;
+		}
+
+		tfoot {
+			font-weight: bold;
+			background-color: #f9f9f9;
+		}
+
+		.faq-item {
+			display: block;
+
+			/*width: 38vw;
+			min-width: 350px;*/
+			margin-top: 0.5rem;
+		}
+		.item-question {
+			background: #143d59;
+			color: whitesmoke;
+			font-size: 1rem;
+			padding: 0.5rem;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.question-text {
+			display: inline-block;
+		}
+		.arrows-container {
+			margin: 0.4rem;
+		}
+		.item-answer {
+			display: none;
+			color: rgb(0, 0, 0);
+			padding: 2rem;
+		}
+		.close {
+			display: none;
+		}
+
+		.show-answer .item-answer {
+			display: block;
+			background: #8dc4ee;
+		}
+		.show-answer .close {
+			display: inline;
+		}
+		.show-answer .expand {
+			display: none;
+		}
+	</style>
+
+		<div class="entry">
+					
+			<br>
+			<label for="datePicker">Please select a date during 2020-2022. Future years will be available in a future update. </label>
+			<input type="date" id="datePicker1" name="datePicker1">
+			<input type="date" id="datePicker2" name="datePicker2">
+			<br>
+			<br>
+
+			<!-- Tabs for globe and map -->
+			<div class="tabs">
+				<div class="tab" id="globe-tab" onclick="toggleContainer('globe')">Globe</div>
+				<div class="tab" id="map-tab" onclick="toggleContainer('map')">Map</div>
+				<div class="tab" id="bar-tab" onclick="toggleContainer('bar')">Bar</div>
 			</div>
-		</div>
+
+			<!-- Globe container -->
+			<div id="globe-container" class="globe-container">
+				<div id="globeplot" class="globe"></div> <!-- First globe container -->
+			</div>
+			
+			<!-- Map containers -->
+			<div id="map-container" class="map-container">
+				<div id="map2" class="map"></div> <!-- Map container -->
+			</div>
+
+			<div id="bar-container" class="bar-container">
+				<div id="bar1" class="bar"></div> <!-- Bar container -->
+			</div>
+
+			<!-- Table for Re-entry Locations -->
+			<div class="table-container">
+				<div>
+					<h3>Re-entry Information (emissions in tonnes, time in UTC). SMC = Satellite Megaconstellation. BC and Cl<sub>y</sub> will be added shortly.</h3>
+					<table id="reentryTable">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>ID</th>
+								<th>Time</th>
+								<th>Reusability</th>
+								<th>Name</th>
+								<th>Category</th>
+								<th>SMC</th>
+								<th>Al<sub>2</sub>O<sub>3</sub></th>
+								<th>NO<sub>x</sub></th>
+								<th>BC</th>
+								<th>Cl<sub>y</sub></th>
+								<th>Unablated Mass</th>
+							</tr>
+						</thead>
+						<tbody id="reentryTableBody">
+							<!-- Dynamic rows for re-entry locations will be inserted here -->
+						</tbody>
+						<tfoot id="reentryTableFoot">
+							<!-- Totals for launches -->
+						</tfoot>
+					</table>
 				</div>
 
+			</div>
+
+			<script>
+
+				// Function to toggle containers
+				function toggleContainer(containerType) {
+					// Reset classes for all tabs and containers
+					document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active-tab'));
+					document.querySelectorAll('.globe-container, .map-container').forEach(container => container.classList.remove('active-container'));
+
+					// Add active class to the clicked tab
+					if (containerType === 'globe') {
+						document.getElementById('globe-tab').classList.add('active-tab');
+						document.getElementById('globe-container').classList.add('active-container');
+					} else if (containerType === 'map') {
+						document.getElementById('map-tab').classList.add('active-tab');
+						document.getElementById('map-container').classList.add('active-container');
+					} else if (containerType === 'bar') {
+						document.getElementById('bar-tab').classList.add('active-tab');
+						document.getElementById('bar-container').classList.add('active-container');
+					}
+				}
+
+				// Initialize with the globe container active
+				toggleContainer('globe');
+
+				const locationGroups = {
+							"Reusable Falcon": [5],
+							"Discarded (Known)": [1,2,3,4], 
+							"Discarded (Approx.)": [6,7]
+						}
+
+				let locations2 = [];
+				async function fetchEventsData(startDate,endDate) {
+					try {
+						// Fetch the data from the API (replace with your actual API URL)
+						const response2 = await fetch(`https://cbarker.pythonanywhere.com/api/reentries?start_date=${startDate}&end_date=${endDate}`); // Replace with your actual API URL
+						const reentryData = await response2.json();
+						const reentriesByCategory = {};
+						
+						// Helper function to assign colors based on the reusability category
+						function getColorForCategory(cat) {
+							switch (cat) {
+								case 'Reusable Falcon':
+									return 'green';
+								case 'Discarded (Known)':
+									return 'blue';
+								case 'Discarded (Approx.)':
+									return 'red';
+								default:
+									return 'gray'; // Default color for unknown categories
+							}
+						}
+
+						function getLocationGroup(locationNumber) {
+							for (const [groupName, locations] of Object.entries(locationGroups)) {
+								if (locations.includes(locationNumber)) {
+									return groupName; // Return the group name if the location is found
+								}
+							}
+							return "Unknown Location"; // Fallback for ungrouped locations
+						}
+
+						Object.keys(reentryData).forEach(date => {
+							reentryData[date].reentries.forEach(reentry => {
+								
+								const cat = reentry.location;
+								const locationGroup = getLocationGroup(cat);
+								// Initialize category group if it doesn't exist
+								if (!reentriesByCategory[locationGroup]) {
+									reentriesByCategory[locationGroup] = {
+										date: [],
+										id: [],
+										time: [],
+										name: [],
+										objname: [],
+										lat: [],
+										lon: [],
+										smc: [],
+										category: [],
+										color: getColorForCategory(locationGroup), // Assign color based on category
+										al: [],
+										nox: [],
+										unab_mass: []
+									};
+								}
+
+								// Add reentry data to the category group
+								reentriesByCategory[locationGroup].date.push(reentry.date);
+								reentriesByCategory[locationGroup].id.push(reentry.id);
+								reentriesByCategory[locationGroup].time.push(reentry.time);
+								reentriesByCategory[locationGroup].smc.push(reentry.smc);
+								reentriesByCategory[locationGroup].lat.push(reentry.lat);
+								reentriesByCategory[locationGroup].name.push(locationGroup);
+								reentriesByCategory[locationGroup].category.push(reentry.category);
+								reentriesByCategory[locationGroup].lon.push(reentry.lon);
+								reentriesByCategory[locationGroup].objname.push(reentry.name);
+								reentriesByCategory[locationGroup].al.push(reentry.emissions.Al2O3);
+								reentriesByCategory[locationGroup].nox.push(reentry.emissions.NOx);
+								reentriesByCategory[locationGroup].unab_mass.push(reentry.emissions.Unablated_Mass);
+							});
+						});
+
+						// Combine the arrays into the desired structure and update the visualisations.
+						locations2 = Object.values(reentriesByCategory);
+						updateTables();
+						updateMaps();
+						updateGraph(startDate,endDate);
+						updateGlobe();
+
+					} catch (error) {
+						console.error('Error fetching or processing the events data:', error);
+					}
+				}
+
+				function updateGlobe() {
+					
+					const MAX_POINTS_PER_LINE = 4; // Less points for a vertical launch
+					const MAX_STEP_ALT = 0.1; // Control the altitude change
+
+					const gData = locations2[0].lat.map((latitude, index) => {
+						const longitude = locations2[0].lon[index];
+						let alt = 0.3;
+						let path = [[latitude, longitude, alt]];
+
+						// You can adjust the number of points and the altitude increment to create the path
+						for (let i = 0; i < MAX_POINTS_PER_LINE; i++) { // Adjust this for more points in the path
+							alt -= MAX_STEP_ALT; // Increase the altitude
+							path.push([latitude, longitude, alt]);
+						}
+						return {
+							path: path,
+							label: locations2[0].id[index]  // Store the launch ID here
+						};
+					});
+
+					const globe = new Globe(document.getElementById('globeplot'))
+					.globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+					.bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+					.pathsData(gData.map(d => d.path))
+					.pathColor(() => 'rgba(255,0,0,0.6)') // Green for the rocket launch path
+					.pathDashLength(0.05)
+					.pathDashGap(0.02)
+					.pathDashAnimateTime(10000)
+					.pathStroke(10)
+					.labelsData(locations2[0].lat.map((lat, i) => ({
+						lat: lat - 1, 
+						lng: locations2[0].lon[i], 
+						name: `Re-entry ${locations2[0].id[i]}`,  // Label is based on launch ID
+						})))
+					.labelLat(d => d.lat)
+					.labelLng(d => d.lng)
+					.labelText(d => d.name)  // Label the location with the launch ID
+					.labelResolution(2)
+					.labelSize(1.5)
+					.labelDotRadius(0);
+
+					setTimeout(() => {
+					globe
+						.pathPointAlt(pnt => pnt[2]) // Set altitude accessor
+						.pathTransitionDuration(5000); // Smooth transition in altitude
+					}, 0);
+
+					// Function to resize the globe based on its container size
+					const resizeGlobe = () => {
+						const container = document.getElementById('globeplot');
+						
+						// Set the width and height of the globe based on the container's size
+						globe.width(container.offsetWidth).height(container.offsetHeight);
+						
+						// Manually reset the canvas element size to match the container size
+						const canvas = document.querySelector('canvas');
+						canvas.style.width = `${container.offsetWidth}px`;
+						canvas.style.height = `${container.offsetHeight}px`;
+
+						// Reset the WebGL renderer size to match the container
+						globe._renderer.setSize(container.offsetWidth, container.offsetHeight);
+						canvas.style.transform = 'none';
+					};
+
+					// Resize the globe on window resize
+					window.addEventListener('resize', resizeGlobe);
+
+					// Trigger the resize immediately after the globe is initialized
+					resizeGlobe();
+				}
+
+				function updateTables() {
+
+					// Populate Re-entry Table
+					const table2Body = document.getElementById('reentryTableBody');
+					const table2Foot = document.getElementById('reentryTableFoot');
+					table2Body.innerHTML = '';
+					table2Foot.innerHTML = '';
+					let totalal = 0, totalnox = 0, totalmass = 0;
+					locations2.forEach(group => {
+						group.id.forEach((location, index) => {
+							const row = document.createElement('tr');
+							const al = group.al[index];
+							const nox = group.nox[index];
+							const mass = group.unab_mass[index];
+							totalal += al;
+							totalnox += nox;
+							totalmass += mass;
+							row.innerHTML = `
+								<td>${group.date[index]}</td>
+								<td>${location}</td> 
+								<td>${group.time[index].toFixed(2)}</td>
+								<td>${group.name[index]}</td>
+								<td class="wrap-text">${group.objname[index]}</td>
+								<td>${group.category[index]}</td>
+								<td>${group.smc[index]}</td>
+								<td>${al.toFixed(2)}</td>
+								<td>${nox.toFixed(2)}</td>
+								<td></td>
+								<td></td>
+								<td>${mass.toFixed(2)}</td>
+							`;
+							table2Body.appendChild(row);
+						});
+					});
+
+					// Add Totals to Re-entry Table
+					const totalRow2 = document.createElement('tr');
+					totalRow2.innerHTML = `
+						<td>Total</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>${totalal.toFixed(2)}</td>
+						<td>${totalnox.toFixed(2)}</td>
+						<td></td>
+						<td></td>
+						<td>${totalmass.toFixed(2)}</td>
+					`;
+					table2Foot.appendChild(totalRow2);
+				}
+				
+				function updateMaps() {
+					// Prepare the data for Plotly
+					const groupNames = ["Reusable Falcon", "Discarded (Known)", "Discarded (Approx.)"];
+					let plotlyData = [];
+					Object.keys(locations2).forEach(locationGroup => {
+						const groupData = locations2[locationGroup];
+						console.log(groupNames[locationGroup]);
+						plotlyData.push({
+							type: 'scattergeo',
+							mode: 'markers',
+							name: groupNames[locationGroup],
+							lat: groupData.lat,
+							lon: groupData.lon,
+							marker: {
+								size: 12,
+								color: groupData.color,
+								symbol: 'x'
+							},
+							
+							showlegend: true
+						});
+					});
+
+					// Common layout configuration
+					const commonLayout = {
+						geo: {
+							resolution: 100, 
+							projection: { type: 'robinson' },
+							showland: true,
+							landcolor: 'rgb(217, 217, 217)',
+							showocean: true,
+							oceancolor: 'rgb(204, 233, 255)',
+							showcountries: true,
+							countrycolor: 'rgb(50, 50, 50)',
+							showsubunits: true,
+							subunitcolor: 'rgb(150, 150, 150)',
+							showgrid: true,
+							gridcolor: 'rgb(220, 220, 220)',
+							gridwidth: 2,
+							griddash: 'dash', // Dashed gridlines for both axes
+							lataxis: {
+								showgrid: true,  // Gridline for latitude axis
+								gridcolor: 'rgb(220, 220, 220)', // Optional: specify grid color
+								griddash: 'dash', // Dashed gridline style
+								tickmode: 'array',
+								ticks: '',
+								ticklen: 10,
+								tickcolor: 'rgb(220, 220, 220)',
+								showticklabels: false,
+								zeroline: false
+							},
+							lonaxis: {
+								showgrid: true,  // Gridline for longitude axis
+								gridcolor: 'rgb(220, 220, 220)', // Optional: specify grid color
+								griddash: 'dash', // Dashed gridline style
+								tickmode: 'array',
+								ticks: '',
+								ticklen: 10,
+								tickcolor: 'rgb(220, 220, 220)',
+								showticklabels: false,
+								zeroline: false
+							}
+						},
+						margin: { t: 50, b: 0, l: 0, r: 0 }, // Adjust top margin for title
+						title: {text: 'Re-entries', font: { size: 18 }, xanchor: 'center', yanchor: 'top', y: 0 }, // Adjust title position
+						showlegend: true,
+						legend: {
+							x: 0.5,
+							y: -0.05,
+							xanchor: 'center',
+							orientation: 'h',
+							traceorder: 'normal',
+							font: { size: 14 },
+							bgcolor: 'rgba(255, 255, 255, 0.5)',  // Slight transparent background
+						},
+					};
+					
+					const layout2 = { ...commonLayout};
+					Plotly.newPlot('map2', plotlyData, layout2);
+				}
+				
+				function updateGraph(startDate,endDate) {
+
+					let totalal = 0, totalnox = 0, totalmass = 0;
+					locations2.forEach(group => {
+						group.id.forEach((location, index) => {
+							const row = document.createElement('tr');
+							const al = group.al[index];
+							const nox = group.nox[index];
+							const mass = group.unab_mass[index];
+							totalal += al;
+							totalnox += nox;
+							totalmass += mass;
+						});
+					});
+					
+					// Prepare the data for Plotly
+					const labels = ['Al<sub>2</sub>O<sub>3</sub>', 'NO<sub>x</sub>', 'BC', 'Cl<sub>y</sub>', 'Unablated Mass'];
+					const data = [totalal, totalnox, 0, 0, totalmass];
+					const maxYValue = Math.max(...data);
+
+					const trace = {
+						x: labels,
+						y: data,
+						type: 'bar',  // Bar chart (you can change to line, pie, etc.)
+						marker: {
+							color: 'rgba(75, 192, 192, 0.7)'
+						}
+					};
+
+					const layout = {
+						title: `Emissions between ${startDate} and ${endDate}`,
+						xaxis: {
+							title: 'Species'
+						},
+						yaxis: {
+							title: 'Mass [t]',
+							range: [0,maxYValue]
+						},
+						autosize: true,  // Automatically resize the chart
+						responsive: true // Ensure the chart resizes with the window
+					};
+
+					// Plot the chart inside the 'emissionsChart' div
+					Plotly.newPlot('bar1', [trace], layout);
+
+				}
+				
+				// Plot a default date when the page opens, then update when the date changes.
+				document.addEventListener('DOMContentLoaded', () => {
+					const datePicker1 = document.getElementById('datePicker1'); // Start date picker
+					const datePicker2 = document.getElementById('datePicker2'); // End date picker
+					let startDate = '2020-01-01';
+					let endDate = '2020-01-10';
+					datePicker1.value = startDate;
+					datePicker2.value = endDate;
+					fetchEventsData(startDate,endDate); // Fetch data for the default date
+
+					// Event listeners for date pickers
+					datePicker1.addEventListener('change', (event) => {
+						startDate= event.target.value;
+						if (startDate) {
+							fetchEventsData(startDate,endDate);
+						}
+					});
+					datePicker2.addEventListener('change', (event) => {
+						endDate = event.target.value;
+						if (endDate) {
+							fetchEventsData(startDate,endDate);
+						}
+					});
+				});
+
+			</script> 
+			<br>
+			<h2>Frequently Asked Questions</h2>
+
+			<div id="faqs-container"></div>
+
+			<script>
+				const faqData = [ 
+					{ question: "What are these chemicals?",
+					answer: "NO<sub>x</sub> is nitrogen oxides, BC is black carbon or soot, Al<sub>2</sub>O<sub>3</sub> is aluminium oxide or alumina, and Cl<sub>y</sub> is a family of chlorine compounds. NO<sub>x</sub> and Cl<sub>y</sub> are released as gases, BC and Al<sub>2</sub>O<sub>3</sub> as particles."
+					},
+					{ question: "How is this data calculated?",
+					answer: "Our calculations are based on the current best scientific knowledge available for emissions from object re-entries. We use object-specific ablation profiles to calculate alumina emissions from object re-entries, including all objects with an apogee above 50 km. Paths shown in the Globe view are fixed at the re-entry location and do not represent real object trajectories."
+					},
+					{ question: "Where can I find the original methodology and data?",
+					answer: "You can find further details in our study published in Nature Scientific Data: Global 3D rocket launch and re-entry air pollutant and carbon dioxide emissions for 2020-2022</strong>. C. R. Barker, E. A. Marais (2024). doi:10.5522/04/26325382. [<a href='https://doi.org/10.5522/04/26325382' target='_blank' rel='noopener noreferrer'>Data</a>]. [<a href='https://www.nature.com/articles/s41597-024-03910-z' target='_blank' rel='noopener noreferrer'>Publication</a>]</p>"
+					}
+				];
+
+				const faqsContainer = document.getElementById('faqs-container');
+
+				faqData.map(function(item) {
+
+					let article = document.createElement('article');
+					article.classList.add('faq-item');
+
+					const markup = `
+							<div class="item-question">
+								<span class="question-text">${item.question}</span>
+								<span class="arrows-container">
+									<span class="expand">▼</span>
+									<span class="close">▲</span>
+								</span>
+							</div>
+							<div class="item-answer">
+								<span>${item.answer}</span>
+							</div>
+					`;
+					
+					article.innerHTML = markup;
+					faqsContainer.append(article);
+				});
+
+				const toggleButtons = document.querySelectorAll('.arrows-container');
+					
+				toggleButtons.forEach(button => {
+					button.addEventListener('click', function(e) {
+						const faqItem = e.currentTarget.parentElement.parentElement;
+						faqItem.classList.toggle("show-answer");
+					});
+				});
+
+			</script>
+
+			<p>
+				Developed by <a href="https://profiles.ucl.ac.uk/93616-connor-barker" target="_blank" rel="noopener noreferrer">Connor Barker</a> (UCL) and <a href="https://profiles.ucl.ac.uk/77783-eloise-marais" target="_blank" rel="noopener noreferrer">Eloise Marais</a> (UCL), in collaboration with <a href="https://www.cfa.harvard.edu/people/jonathan-mcdowell" target="_blank" rel="noopener noreferrer">Jonathan McDowell</a> (Harvard-Smithsonian Center for Astrophysics). Interested in using the data or spot any room for improvements? Please reach out to Connor Barker at <a href= "mailto:name@email.com">connor.barker@ucl.ac.uk</a>.
+			</p>
+			<p>
+				<strong>Funding Disclaimer:</strong> This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No. 851854). <a href="https://cordis.europa.eu/project/id/851854" target="_blank" rel="noopener noreferrer">European Commission project page</a>.
+			</p>
+		</div>
+		</div>
+	</div>
+</div>
 
 <hr />
 <div id="footer">
 <!-- If you'd like to support WordPress, having the "powered by" link somewhere on your blog is the best way; it's our only promotion or advertising. -->
 	<p>
 		<br> <br />
-		
 		<!-- 20 queries. 0.067 seconds. -->
 	</p>
 </div>
-</div>
-
 <!-- Gorgeous design by Michael Heilemann - http://binarybonsai.com/kubrick/ -->
-
-		<script type="text/javascript' src='./js/wp-embed.min.js"></script>
+<script type="text/javascript' src='./js/wp-embed.min.js"></script>
 </body>
-</html>
 </html>
