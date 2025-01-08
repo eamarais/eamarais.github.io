@@ -72,7 +72,13 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 					
 	<style>
-	
+
+		.wrap-text {
+			white-space: normal;
+			word-wrap: break-word;
+			max-width: 500px; /* Adjust the width as needed */
+		}
+		
 		/* Container to align the maps side by side */
 		.map-container {
 			display: flex;
@@ -160,17 +166,18 @@
 			margin-top: 20px;
 			border-collapse: collapse;
 			padding: 10px;
+			white-space: nowrap;
 		}
 
 		th, td {
 			padding: 10px;
 			text-align: left;
 			border: 1px solid #ddd;
+			white-space: nowrap;
 		}
 
 		th {
 			background-color: #f4f4f4;
-			white-space: nowrap;
 		}
 
 		tfoot {
@@ -254,13 +261,13 @@
 			<!-- Table for Re-entry Locations -->
 			<div class="table-container">
 				<div>
-					<h3>Re-entry Information (emissions in tonnes). SMC = Satellite Megaconstellation. BC and Cl<sub>y</sub> will be added shortly.</h3>
+					<h3>Re-entry Information (emissions in tonnes, time in UTC). SMC = Satellite Megaconstellation. BC and Cl<sub>y</sub> will be added shortly.</h3>
 					<table id="reentryTable">
 						<thead>
 							<tr>
 								<th>Date</th>
 								<th>ID</th>
-								<th>Time (UTC)</th>
+								<th>Time</th>
 								<th>Reusability</th>
 								<th>Name</th>
 								<th>Category</th>
@@ -307,6 +314,12 @@
 				// Initialize with the globe container active
 				toggleContainer('globe');
 
+				const locationGroups = {
+							"Reusable Falcon": [5],
+							"Discarded (Known)": [1,2,3,4], 
+							"Discarded (Approx.)": [6,7]
+						}
+
 				let locations2 = [];
 				async function fetchEventsData(startDate,endDate) {
 					try {
@@ -314,26 +327,48 @@
 						const response2 = await fetch(`https://cbarker.pythonanywhere.com/api/reentries?start_date=${startDate}&end_date=${endDate}`); // Replace with your actual API URL
 						const reentryData = await response2.json();
 						const reentriesByCategory = {};
+						
+						// Helper function to assign colors based on the reusability category
+						function getColorForCategory(cat) {
+							switch (cat) {
+								case 'Reusable Falcon':
+									return 'green';
+								case 'Discarded (Known)':
+									return 'blue';
+								case 'Discarded (Approx.)':
+									return 'red';
+								default:
+									return 'gray'; // Default color for unknown categories
+							}
+						}
+
+						function getLocationGroup(locationNumber) {
+							for (const [groupName, locations] of Object.entries(locationGroups)) {
+								if (locations.includes(locationNumber)) {
+									return groupName; // Return the group name if the location is found
+								}
+							}
+							return "Unknown Location"; // Fallback for ungrouped locations
+						}
 
 						Object.keys(reentryData).forEach(date => {
 							reentryData[date].reentries.forEach(reentry => {
 								
-								const cat = reentry.reusability;
-								console.log(reentry.reusability)
+								const cat = reentry.location;
+								const locationGroup = getLocationGroup(cat);
 								// Initialize category group if it doesn't exist
-								if (!reentriesByCategory[cat]) {
-									reentriesByCategory[cat] = {
+								if (!reentriesByCategory[locationGroup]) {
+									reentriesByCategory[locationGroup] = {
 										date: [],
 										id: [],
 										time: [],
-										name: cat,
+										name: [],
 										objname: [],
 										lat: [],
 										lon: [],
 										smc: [],
-										name: [],
 										category: [],
-										color: getColorForCategory(cat), // Assign color based on category
+										color: getColorForCategory(locationGroup), // Assign color based on category
 										al: [],
 										nox: [],
 										unab_mass: []
@@ -341,21 +376,21 @@
 								}
 
 								// Add reentry data to the category group
-								reentriesByCategory[cat].date.push(reentry.date);
-								reentriesByCategory[cat].id.push(reentry.id);
-								reentriesByCategory[cat].time.push(reentry.time);
-								reentriesByCategory[cat].smc.push(reentry.smc);
-								reentriesByCategory[cat].lat.push(reentry.lat);
-								reentriesByCategory[cat].name.push(reentry.reusability);
-								reentriesByCategory[cat].category.push(reentry.category);
-								reentriesByCategory[cat].lon.push(reentry.lon);
-								reentriesByCategory[cat].objname.push(reentry.name);
-								reentriesByCategory[cat].al.push(reentry.emissions.Al2O3 * 1000);
-								reentriesByCategory[cat].nox.push(reentry.emissions.NOx * 1000);
-								reentriesByCategory[cat].unab_mass.push(reentry.emissions.Unablated_Mass * 1000);
+								reentriesByCategory[locationGroup].date.push(reentry.date);
+								reentriesByCategory[locationGroup].id.push(reentry.id);
+								reentriesByCategory[locationGroup].time.push(reentry.time);
+								reentriesByCategory[locationGroup].smc.push(reentry.smc);
+								reentriesByCategory[locationGroup].lat.push(reentry.lat);
+								reentriesByCategory[locationGroup].name.push(locationGroup);
+								reentriesByCategory[locationGroup].category.push(reentry.category);
+								reentriesByCategory[locationGroup].lon.push(reentry.lon);
+								reentriesByCategory[locationGroup].objname.push(reentry.name);
+								reentriesByCategory[locationGroup].al.push(reentry.emissions.Al2O3);
+								reentriesByCategory[locationGroup].nox.push(reentry.emissions.NOx);
+								reentriesByCategory[locationGroup].unab_mass.push(reentry.emissions.Unablated_Mass);
 							});
 						});
-						
+
 						// Combine the arrays into the desired structure and update the visualisations.
 						locations2 = Object.values(reentriesByCategory);
 						updateTables();
@@ -440,20 +475,6 @@
 					resizeGlobe();
 				}
 
-				// Helper function to assign colors based on the reusability category
-				function getColorForCategory(cat) {
-					switch (cat) {
-						case 'Reusable':
-							return 'green';
-						case 'Discarded (known)':
-							return 'red';
-						case 'Discarded (approx.)':
-							return 'blue';
-						default:
-							return 'gray'; // Default color for unknown categories
-					}
-				}
-
 				function updateTables() {
 
 					// Populate Re-entry Table
@@ -476,7 +497,7 @@
 								<td>${location}</td> 
 								<td>${group.time[index].toFixed(2)}</td>
 								<td>${group.name[index]}</td>
-								<td>${group.objname[index]}</td>
+								<td class="wrap-text">${group.objname[index]}</td>
 								<td>${group.category[index]}</td>
 								<td>${group.smc[index]}</td>
 								<td>${al.toFixed(2)}</td>
@@ -507,51 +528,29 @@
 					`;
 					table2Foot.appendChild(totalRow2);
 				}
-
+				
 				function updateMaps() {
-					const mapData2 = locations2.length > 0 ? locations2.map(location => ({
-						type: 'scattergeo',
-						mode: 'markers+text',
-						name: location.name,
-						lat: location.lat,
-						lon: location.lon,
-						marker: {
-							size: 12,
-							color: location.color,
-							symbol: 'x'
-						},
-						textfont: {
-							size: 15,  // Font size for the labels
-							color: 'black',  // Color of the text
-							weight: 'bold',
-						},
-						textposition: 'right',
-						text: location.text,
-						showlegend: false
-					})) : [{
-						type: 'scattergeo',
-						mode: 'markers+text', // Keep the map but without data points
-						marker: { size: 0 } // Invisible markers
-					}];
-
-					const mapData2_legend = locations2.length > 0 ? locations2.map(location => ({
-						type: 'scattergeo',
-						mode: 'markers',
-						name: location.name,
-						lat: location.lat,
-						lon: location.lon,
-						marker: {
-							size: 12,
-							color: location.color,
-							symbol: 'x'
-						},
-						showlegend: true
-					})) : [{
-						type: 'scattergeo',
-						mode: 'markers', // Keep the map but without data points
-						marker: { size: 0 }, // Invisible markers
-						showlegend: true
-					}];
+					// Prepare the data for Plotly
+					const groupNames = ["Reusable Falcon", "Discarded (Known)", "Discarded (Approx.)"];
+					let plotlyData = [];
+					Object.keys(locations2).forEach(locationGroup => {
+						const groupData = locations2[locationGroup];
+						console.log(groupNames[locationGroup]);
+						plotlyData.push({
+							type: 'scattergeo',
+							mode: 'markers',
+							name: groupNames[locationGroup],
+							lat: groupData.lat,
+							lon: groupData.lon,
+							marker: {
+								size: 12,
+								color: groupData.color,
+								symbol: 'x'
+							},
+							
+							showlegend: true
+						});
+					});
 
 					// Common layout configuration
 					const commonLayout = {
@@ -594,7 +593,7 @@
 							}
 						},
 						margin: { t: 50, b: 0, l: 0, r: 0 }, // Adjust top margin for title
-						title: { font: { size: 18 }, xanchor: 'center', yanchor: 'top', y: 0 }, // Adjust title position
+						title: {text: 'Re-entries', font: { size: 18 }, xanchor: 'center', yanchor: 'top', y: 0 }, // Adjust title position
 						showlegend: true,
 						legend: {
 							x: 0.5,
@@ -606,15 +605,9 @@
 							bgcolor: 'rgba(255, 255, 255, 0.5)',  // Slight transparent background
 						},
 					};
-
-					// Add individual titles
-					const layout2 = { ...commonLayout, title: { text: 'Re-entries', font: { size: 18 } } };
-
-					// Combine map data with legend data for each plot
-					const combinedMapData2 = [...mapData2, ...mapData2_legend];
-
-					// Render the maps with their legends
-					Plotly.newPlot('map2', combinedMapData2, layout2);
+					
+					const layout2 = { ...commonLayout};
+					Plotly.newPlot('map2', plotlyData, layout2);
 				}
 				
 				function updateGraph(startDate,endDate) {
@@ -668,7 +661,7 @@
 				document.addEventListener('DOMContentLoaded', () => {
 					const datePicker1 = document.getElementById('datePicker1'); // Start date picker
 					const datePicker2 = document.getElementById('datePicker2'); // End date picker
-					let startDate = '2020-01-08';
+					let startDate = '2020-01-01';
 					let endDate = '2020-01-10';
 					datePicker1.value = startDate;
 					datePicker2.value = endDate;
@@ -698,10 +691,10 @@
 			<script>
 				const faqData = [ 
 					{ question: "What are these chemicals?",
-					answer: "NO<sub>x</sub> is nitrogen oxides, H<sub>2</sub>O is water vapour, CO<sub>2</sub> is carbon dioxide, BC is black carbon or soot, Al<sub>2</sub>O<sub>3</sub> is aluminium oxide or alumina, and Cl<sub>y</sub> is a family of chlorine compounds. NO<sub>x</sub>, H<sub>2</sub>O, CO<sub>2</sub>, and Cl<sub>y</sub> are released as gases, BC and Al<sub>2</sub>O<sub>3</sub> as particles."
+					answer: "NO<sub>x</sub> is nitrogen oxides, BC is black carbon or soot, Al<sub>2</sub>O<sub>3</sub> is aluminium oxide or alumina, and Cl<sub>y</sub> is a family of chlorine compounds. NO<sub>x</sub> and Cl<sub>y</sub> are released as gases, BC and Al<sub>2</sub>O<sub>3</sub> as particles."
 					},
 					{ question: "How is this data calculated?",
-					answer: "Our calculations are based on the current best scientific knowledge available for emissions from rocket launch and object re-entries. We include the effects of a changing chemical environment with altitude in our launch emissions, and use object-specific ablation profiles to calculate alumina emissions from object re-entries. We calculate emissions globally up to a maximum altitude of 80 km. Paths shown in the Globe view are fixed at the launch or re-entry location and do not represent real rocket or object trajectories."
+					answer: "Our calculations are based on the current best scientific knowledge available for emissions from object re-entries. We use object-specific ablation profiles to calculate alumina emissions from object re-entries, including all objects with an apogee above 50 km. Paths shown in the Globe view are fixed at the re-entry location and do not represent real object trajectories."
 					},
 					{ question: "Where can I find the original methodology and data?",
 					answer: "You can find further details in our study published in Nature Scientific Data: Global 3D rocket launch and re-entry air pollutant and carbon dioxide emissions for 2020-2022</strong>. C. R. Barker, E. A. Marais (2024). doi:10.5522/04/26325382. [<a href='https://doi.org/10.5522/04/26325382' target='_blank' rel='noopener noreferrer'>Data</a>]. [<a href='https://www.nature.com/articles/s41597-024-03910-z' target='_blank' rel='noopener noreferrer'>Publication</a>]</p>"

@@ -72,6 +72,12 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 					
 	<style>
+
+		.wrap-text {
+			white-space: normal;
+			word-wrap: break-word;
+			max-width: 500px; /* Adjust the width as needed */
+		}
 	
 		/* Container to align the maps side by side */
 		.map-container {
@@ -255,14 +261,14 @@
 			<!-- Table for Launch Locations -->
 			<div class="table-container">
 				<div>
-					<h3>Launch Information (emissions in tonnes). SMC = Satellite Megaconstellation.</h3>
+					<h3>Launch Information (emissions in tonnes, time in UTC). SMC = Satellite Megaconstellation.</h3>
 					<table id="launchTable">
 						<thead>
 							<tr>
 								<th>Date</th>
 								<th>ID</th>
-								<th>Time (UTC)</th>
-								<th>Location</th>
+								<th>Time</th>
+								<th>Launch Site</th>
 								<th>Rocket</th>
 								<th>SMC</th>
 								<th>BC</th>
@@ -331,6 +337,7 @@
 						const NOx    = [];
 						const rocket = [];
 						const smc    = [];
+						const location   = [];
 
 						Object.keys(launchData).forEach(date => {
 							launchData[date].launches.forEach(launch => {
@@ -338,15 +345,15 @@
 								launch_time.push(launch.time)
 								lat.push(parseFloat(launch.lat));
 								lon.push(parseFloat(launch.lon));
-								text.push(launch.site);
+								text.push(launch.location);
 								id.push(launch.id);
-								BC.push(launch.emissions.BC * 1000);
-								CO.push(launch.emissions.CO * 1000);
-								CO2.push(launch.emissions.CO2 * 1000);
-								H2O.push(launch.emissions.H2O * 1000);
-								Al2O3.push(launch.emissions.Al2O3 * 1000);
-								Cly.push(launch.emissions.Cly * 1000);
-								NOx.push(launch.emissions.NOx * 1000);
+								BC.push(launch.emissions.BC);
+								CO.push(launch.emissions.CO);
+								CO2.push(launch.emissions.CO2);
+								H2O.push(launch.emissions.H2O);
+								Al2O3.push(launch.emissions.Al2O3);
+								Cly.push(launch.emissions.Cly);
+								NOx.push(launch.emissions.NOx);
 								rocket.push(launch.rocket);
 								smc.push(launch.smc);
 							});
@@ -465,8 +472,8 @@
 							<td>${locations1[0].date[index]}</td> 
 							<td>${location}</td>  
 							<td>${locations1[0].time[index].toFixed(2)}</td> 
-							<td>${locations1[0].text[index]}</td> 
-							<td>${locations1[0].rocket[index]}</td> 
+							<td class="wrap-text">${locations1[0].text[index]}</td> 
+							<td class="wrap-text">${locations1[0].rocket[index]}</td> 
 							<td>${locations1[0].smc[index]}</td> 
 							<td>${locations1[0].BC[index].toFixed(1)}</td> 
 							<td>${locations1[0].CO[index].toFixed(1)}</td> 
@@ -501,7 +508,7 @@
 				function updateMaps() {
 					const latitudes1 = locations1.map(d => d.lat).flat();
 					const longitudes1 = locations1.map(d => d.lon).flat();
-					const labels1 = locations1.map(d => d.text).flat();
+					const labels1 = locations1.map(d => d.id).flat();
 
 					const mapData1 = latitudes1.length > 0 && longitudes1.length > 0 ? [{
 						type: 'scattergeo',
@@ -520,24 +527,6 @@
 							weight: 'bold',
 						},
 						textposition: 'right',
-						showlegend: false
-					}] : [{
-						type: 'scattergeo',
-						mode: 'markers', // Keep the map but without data points
-						marker: { size: 0 }, // Invisible markers
-					}];
-					const mapData1_legend = latitudes1.length > 0 && longitudes1.length > 0 ? [{
-						type: 'scattergeo',
-						lat: [1],
-						lon: [1],
-						mode: 'markers',
-						name: "",
-						marker: {
-						size: 12,
-						color: 'transparent',
-						symbol: 'x',
-						},
-						showlegend: true
 					}] : [{
 						type: 'scattergeo',
 						mode: 'markers', // Keep the map but without data points
@@ -586,26 +575,13 @@
 						},
 						margin: { t: 50, b: 0, l: 0, r: 0 }, // Adjust top margin for title
 						title: { font: { size: 18 }, xanchor: 'center', yanchor: 'top', y: 0 }, // Adjust title position
-						showlegend: true,
-						legend: {
-							x: 0.5,
-							y: -0.05,
-							xanchor: 'center',
-							orientation: 'h',
-							traceorder: 'normal',
-							font: { size: 14 },
-							bgcolor: 'rgba(255, 255, 255, 0.5)',  // Slight transparent background
-						},
 					};
 
 					// Add individual titles
 					const layout1 = { ...commonLayout, title: { text: 'Launches', font: { size: 18 } }};
 
-					// Combine map data with legend data for each plot
-					const combinedMapData1 = [...mapData1, ...mapData1_legend];
-
 					// Render the maps with their legends
-					Plotly.newPlot('map1', combinedMapData1, layout1);
+					Plotly.newPlot('map1', mapData1, layout1);
 				}
 				
 				function updateGraph(startDate,endDate) {
@@ -700,7 +676,7 @@
 						answer: "NO<sub>x</sub> is nitrogen oxides, H<sub>2</sub>O is water vapour, CO<sub>2</sub> is carbon dioxide, BC is black carbon or soot, Al<sub>2</sub>O<sub>3</sub> is aluminium oxide or alumina, and Cl<sub>y</sub> is a family of chlorine compounds. NO<sub>x</sub>, H<sub>2</sub>O, CO<sub>2</sub>, and Cl<sub>y</sub> are released as gases, BC and Al<sub>2</sub>O<sub>3</sub> as particles."
 						},
 						{ question: "How is this data calculated?",
-						answer: "Our calculations are based on the current best scientific knowledge available for emissions from rocket launch and object re-entries. We include the effects of a changing chemical environment with altitude in our launch emissions, and use object-specific ablation profiles to calculate alumina emissions from object re-entries. We calculate emissions globally up to a maximum altitude of 80 km. Paths shown in the Globe view are fixed at the launch or re-entry location and do not represent real rocket or object trajectories."
+						answer: "Our calculations are based on the current best scientific knowledge available for emissions from rocket launches. We include the effects of a changing chemical environment with altitude in our launch emissions, and calculate emissions globally up to a maximum altitude of 80 km. Paths shown in the Globe view are fixed at the launch site and do not represent real rocket trajectories."
 						},
 						{ question: "Where can I find the original methodology and data?",
 						answer: "You can find further details in our study published in Nature Scientific Data: Global 3D rocket launch and re-entry air pollutant and carbon dioxide emissions for 2020-2022</strong>. C. R. Barker, E. A. Marais (2024). doi:10.5522/04/26325382. [<a href='https://doi.org/10.5522/04/26325382' target='_blank' rel='noopener noreferrer'>Data</a>]. [<a href='https://www.nature.com/articles/s41597-024-03910-z' target='_blank' rel='noopener noreferrer'>Publication</a>]</p>"
