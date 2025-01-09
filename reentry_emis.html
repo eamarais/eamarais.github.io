@@ -396,7 +396,6 @@
 
 						// Combine the arrays into the desired structure and update the visualisations.
 						locations2 = Object.values(reentriesByCategory);
-						console.log(locations2)
 						updateTables();
 						updateMaps();
 						updateGraph(startDate,endDate);
@@ -412,36 +411,47 @@
 					const MAX_POINTS_PER_LINE = 4; // Less points for a vertical launch
 					const MAX_STEP_ALT = 0.1; // Control the altitude change
 
-					const gData = locations2[0].lat.map((latitude, index) => {
-						const longitude = locations2[0].lon[index];
-						let alt = 0.3;
-						let path = [[latitude, longitude, alt]];
+					// Combine gData and labels for all locations in locations2
+					const allGData = [];
+					const allLabels = [];
 
-						// You can adjust the number of points and the altitude increment to create the path
-						for (let i = 0; i < MAX_POINTS_PER_LINE; i++) { // Adjust this for more points in the path
-							alt -= MAX_STEP_ALT; // Increase the altitude
-							path.push([latitude, longitude, alt]);
-						}
-						return {
-							path: path,
-							label: locations2[0].id[index]  // Store the launch ID here
-						};
+					locations2.forEach(locationSet => {
+						const gData = locationSet.lat.map((latitude, index) => {
+							const longitude = locationSet.lon[index];
+							let alt = 0.3;
+							let path = [[latitude, longitude, alt]];
+
+							// You can adjust the number of points and the altitude increment to create the path
+							for (let i = 0; i < MAX_POINTS_PER_LINE; i++) { // Adjust this for more points in the path
+								alt -= MAX_STEP_ALT; // Increase the altitude
+								path.push([latitude, longitude, alt]);
+							}
+							return {
+								path: path,
+								label: locationSet.id[index]  // Store the launch ID here
+							};
+						});
+
+						const labels = locationSet.lat.map((latitude, index) => ({
+							lat: latitude - 1,
+							lng: locationSet.lon[index],
+							name: `Re-entry ${locationSet.id[index]}`, // Label based on launch ID
+						}));
+
+						allGData.push(...gData);
+						allLabels.push(...labels);
 					});
 
 					const globe = new Globe(document.getElementById('globeplot'))
 					.globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
 					.bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
-					.pathsData(gData.map(d => d.path))
+					.pathsData(allGData.map(d => d.path))
 					.pathColor(() => 'rgba(255,0,0,0.6)') // Green for the rocket launch path
 					.pathDashLength(0.05)
 					.pathDashGap(0.02)
 					.pathDashAnimateTime(10000)
 					.pathStroke(10)
-					.labelsData(locations2[0].lat.map((lat, i) => ({
-						lat: lat - 1, 
-						lng: locations2[0].lon[i], 
-						name: `Re-entry ${locations2[0].id[i]}`,  // Label is based on launch ID
-						})))
+					.labelsData(allLabels)
 					.labelLat(d => d.lat)
 					.labelLng(d => d.lng)
 					.labelText(d => d.name)  // Label the location with the launch ID
