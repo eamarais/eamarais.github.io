@@ -351,30 +351,33 @@
 							return "Unknown Location"; // Fallback for ungrouped locations
 						}
 
+						function createReentryCategory(categoryName) {
+							return {
+								date: [],
+								id: [],
+								time: [],
+								name: [],
+								objname: [],
+								lat: [],
+								lon: [],
+								smc: [],
+								category: [],
+								color: getColorForCategory(categoryName),
+								al: [],
+								nox: [],
+								unab_mass: []
+							};
+						}
+
+						reentriesByCategory['Reusable Falcon'] = createReentryCategory('Reusable Falcon');
+						reentriesByCategory['Discarded (Known)'] = createReentryCategory('Discarded (Known)');
+						reentriesByCategory['Discarded (Approx.)'] = createReentryCategory('Discarded (Approx.)');
+
 						Object.keys(reentryData).forEach(date => {
 							reentryData[date].reentries.forEach(reentry => {
 								
-								const cat = reentry.location;
-								const locationGroup = getLocationGroup(cat);
-								// Initialize category group if it doesn't exist
-								if (!reentriesByCategory[locationGroup]) {
-									reentriesByCategory[locationGroup] = {
-										date: [],
-										id: [],
-										time: [],
-										name: [],
-										objname: [],
-										lat: [],
-										lon: [],
-										smc: [],
-										category: [],
-										color: getColorForCategory(locationGroup), // Assign color based on category
-										al: [],
-										nox: [],
-										unab_mass: []
-									};
-								}
-
+								const locationGroup = getLocationGroup(reentry.location);
+								
 								// Add reentry data to the category group
 								reentriesByCategory[locationGroup].date.push(reentry.date);
 								reentriesByCategory[locationGroup].id.push(reentry.id);
@@ -393,6 +396,7 @@
 
 						// Combine the arrays into the desired structure and update the visualisations.
 						locations2 = Object.values(reentriesByCategory);
+						console.log(locations2)
 						updateTables();
 						updateMaps();
 						updateGraph(startDate,endDate);
