@@ -261,7 +261,9 @@
 			<!-- Table for Re-entry Locations -->
 			<div class="table-container">
 				<div>
-					<h3>Re-entry Information (emissions in tonnes, time in UTC). SMC = Satellite Megaconstellation. BC and Cl<sub>y</sub> will be added shortly.</h3>
+					<h3>Re-entry Details (see footer for more information)</h3>
+					<h4></h4>
+					<h4></h4>
 					<table id="reentryTable">
 						<thead>
 							<tr>
@@ -270,12 +272,13 @@
 								<th>Time</th>
 								<th>Reusability</th>
 								<th>Name</th>
-								<th>Category</th>
+								<th>Cat.</th>
 								<th>SMC</th>
 								<th>Al<sub>2</sub>O<sub>3</sub></th>
 								<th>NO<sub>x</sub></th>
 								<th>BC</th>
-								<th>Cl<sub>y</sub></th>
+								<th>HCl</th>
+								<th>Cl</th>
 								<th>Unablated Mass</th>
 							</tr>
 						</thead>
@@ -286,6 +289,7 @@
 							<!-- Totals for launches -->
 						</tfoot>
 					</table>
+					* Emissions in tonnes, time in UTC. SMC = Satellite Megaconstellation. Cat. = Category. P = Payload, C = Component, B = Booster, S = Stage.
 				</div>
 
 			</div>
@@ -365,6 +369,9 @@
 								color: getColorForCategory(categoryName),
 								al: [],
 								nox: [],
+								bc: [],
+								hcl: [],
+								cl: [],
 								unab_mass: []
 							};
 						}
@@ -390,6 +397,9 @@
 								reentriesByCategory[locationGroup].objname.push(reentry.name);
 								reentriesByCategory[locationGroup].al.push(reentry.emissions.Al2O3);
 								reentriesByCategory[locationGroup].nox.push(reentry.emissions.NOx);
+								reentriesByCategory[locationGroup].bc.push(reentry.emissions.BC);
+								reentriesByCategory[locationGroup].hcl.push(reentry.emissions.HCl);
+								reentriesByCategory[locationGroup].cl.push(reentry.emissions.Cl);
 								reentriesByCategory[locationGroup].unab_mass.push(reentry.emissions.Unablated_Mass);
 							});
 						});
@@ -435,7 +445,7 @@
 						const labels = locationSet.lat.map((latitude, index) => ({
 							lat: latitude - 1,
 							lng: locationSet.lon[index],
-							name: `Re-entry ${locationSet.id[index]}`, // Label based on launch ID
+							name: `Re-entry ID ${locationSet.id[index]}`, // Label based on launch ID
 						}));
 
 						allGData.push(...gData);
@@ -505,6 +515,9 @@
 								smc: group.smc[index],
 								al: group.al[index],
 								nox: group.nox[index],
+								bc: group.bc[index],
+								hcl: group.hcl[index],
+								cl: group.cl[index],
 								unab_mass: group.unab_mass[index],
 								groupName: group.name[index] // Keep track of the group name for later
 							};
@@ -521,17 +534,17 @@
 					table2Body.innerHTML = '';
 					table2Foot.innerHTML = '';
 					let totalal = 0, totalnox = 0, totalmass = 0;
+					let totalbc = 0, totalhcl = 0, totalcl = 0;
 
 					allRows.forEach(row => {
-						const { date, location, time, name, objname, category, smc, al, nox, unab_mass } = row;
-						totalal += al;
-						totalnox += nox;
-						totalmass += unab_mass;
+						const { date, location, time, name, objname, category, smc, al, nox, bc, hcl, cl, unab_mass } = row;
 
-						
 						const tableRow = document.createElement('tr');
 						totalal += al;
 						totalnox += nox;
+						totalbc += bc;
+						totalhcl += hcl;
+						totalcl += cl;
 						totalmass += unab_mass;
 						tableRow.innerHTML = `
 							<td>${date}</td>
@@ -543,8 +556,9 @@
 							<td>${smc}</td>
 							<td>${al.toFixed(2)}</td>
 							<td>${nox.toFixed(2)}</td>
-							<td></td>
-							<td></td>
+							<td>${bc.toFixed(2)}</td>
+							<td>${hcl.toFixed(2)}</td>
+							<td>${cl.toFixed(2)}</td>
 							<td>${unab_mass.toFixed(2)}</td>
 							`;
 						table2Body.appendChild(tableRow);
@@ -562,8 +576,9 @@
 						<td>-</td>
 						<td>${totalal.toFixed(2)}</td>
 						<td>${totalnox.toFixed(2)}</td>
-						<td></td>
-						<td></td>
+						<td>${totalbc.toFixed(2)}</td>
+						<td>${totalhcl.toFixed(2)}</td>
+						<td>${totalcl.toFixed(2)}</td>
 						<td>${totalmass.toFixed(2)}</td>
 					`;
 					table2Foot.appendChild(totalRow2);
@@ -652,21 +667,28 @@
 				function updateGraph(startDate,endDate) {
 
 					let totalal = 0, totalnox = 0, totalmass = 0;
+					let totalbc = 0, totalhcl = 0, totalcl = 0;
 					locations2.forEach(group => {
 						group.id.forEach((location, index) => {
-							const row = document.createElement('tr');
-							const al = group.al[index];
-							const nox = group.nox[index];
+							const row  = document.createElement('tr');
+							const al   = group.al[index];
+							const nox  = group.nox[index];
+							const bc   = group.bc[index];
+							const hcl  = group.hcl[index];
+							const cl   = group.cl[index];
 							const mass = group.unab_mass[index];
 							totalal += al;
 							totalnox += nox;
+							totalbc += bc;
+							totalhcl += hcl;
+							totalcl += cl;
 							totalmass += mass;
 						});
 					});
 					
 					// Prepare the data for Plotly
-					const labels = ['Al<sub>2</sub>O<sub>3</sub>', 'NO<sub>x</sub>', 'BC', 'Cl<sub>y</sub>', 'Unablated Mass'];
-					const data = [totalal, totalnox, 0, 0, totalmass];
+					const labels = ['Al<sub>2</sub>O<sub>3</sub>', 'NO<sub>x</sub>', 'BC', 'HCl', 'Cl', 'Unablated Mass'];
+					const data = [totalal, totalnox, totalbc, totalhcl, totalcl, totalmass];
 					const maxYValue = Math.max(...data);
 
 					const trace = {
