@@ -24,7 +24,7 @@
 	#page { background: url("./themes/default/images/kubrickbgwide.jpg") repeat-y top; border: none; }
 </style>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="//unpkg.com/globe.gl"></script>
+<script src="//cdn.jsdelivr.net/npm/globe.gl"></script>
 	<!-- begin gallery scripts -->
 
     <link rel="stylesheet" href="./plugins/featured-content-gallery/css/jd.gallery.css.php" type="text/css" media="screen" charset="utf-8"/>
@@ -463,8 +463,8 @@
 					});
 
 					const globe = new Globe(document.getElementById('globeplot'))
-					.globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-					.bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+					.globeImageUrl('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
+					.bumpImageUrl('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
 					.pathsData(allGData.map(d => d.path))
 					.pathColor(() => 'rgba(255,0,0,0.6)') // Green for the rocket launch path
 					.pathDashLength(0.05)
