@@ -306,6 +306,7 @@
 			<br>
 
 			Please select a date during 2020-2022 (2023-2024 will be released shortly).
+			<br>
 			<label>Start Date: <input type="date" id="datePicker1" name="datePicker1"></label>
 			<label>End Date: <input type="date" id="datePicker2" name="datePicker2"></label><br />
 			<br>
@@ -569,7 +570,7 @@
 								all_launches.NOx.push(launch.emissions.NOx);
 							});
 						});
-
+						
 						populateFilters(all_launches);
 						updateVisualizations(all_launches);
 
@@ -607,8 +608,8 @@
 					});
 
 					globe = new Globe(document.getElementById('globeplot'))
-					.globeImageUrl('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
-					.bumpImageUrl('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
+					.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
+					.bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
 					.pathsData(gData.map(d => d.path))
 					.pathColor(() => 'rgba(0,255,0,0.6)') // Green for the rocket launch path
 					.pathDashLength(0.05)
@@ -879,6 +880,7 @@
 					});
 
 					document.getElementById('applyFilters').addEventListener('click', () => {
+						toggleContainer('globe');
 						filterlaunches(all_launches);
 					});
 				});
