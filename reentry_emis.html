@@ -313,8 +313,8 @@
 
 			<div class="filter-container">
 				<div class="filter">
-					<label>Reusuability</label>
-					<div class="dropdown" id="reusabilityFilter">
+					<label>Location</label>
+					<div class="dropdown" id="locationFilter">
 						<ul></ul>
 					</div>
 				</div>
@@ -371,7 +371,7 @@
 								<th>Date</th>
 								<th>ID</th>
 								<th>Time</th>
-								<th>Reusability</th>
+								<th>Location</th>
 								<th>Name</th>
 								<th>Cat.</th>
 								<th>SMC</th>
@@ -402,14 +402,14 @@
 
 			    // Initialize the default dates 
 				let startDate = '2020-01-01';
-				let endDate = '2021-01-01';
+				let endDate = '2020-01-20';
 
 				let autoRotate = true; // Flag to control rotation
 				let lastInteractionTime = Date.now(); // Track last user interaction
 
 				let globe;
 
-				let groupNames = ["Reusable Falcon", "Discarded (Known)", "Discarded (Approx.)"];
+				let groupNames = ["Known (Falcon)", "Known (non-Falcon)", "Approximated"];
 
 				function rotateGlobe() {
 					if (!autoRotate || !globe) return; // Stop rotation if the user interacted
@@ -454,7 +454,7 @@
 					}
 
 					// Populate each filter
-					populateCheckboxes('reusabilityFilter', groupNames);
+					populateCheckboxes('locationFilter', groupNames);
 					populateCheckboxes('categoryFilter', categories);
 					populateCheckboxes('smcFilter', smcValues);
 				}
@@ -468,7 +468,7 @@
 					}
 
 					// Get selected values from each filter
-					const selectedReusabilities = getSelectedfilters('reusabilityFilter');
+					const selectedReusabilities = getSelectedfilters('locationFilter');
 					const selectedCategories    = getSelectedfilters('categoryFilter');
 					const selectedSmc           = getSelectedfilters('smcFilter');
 
@@ -514,7 +514,7 @@
 						};
 					});
 
-					// Remove null entries (groups that were excluded by the reusability filter)
+					// Remove null entries (groups that were excluded by the filter)
 					filteredData = filteredData.filter(group => group !== null);
 
 					// Update the visualizations with the filtered data
@@ -541,9 +541,9 @@
 				}				
 
 				const locationGroups = {
-							"Reusable Falcon": [5],
-							"Discarded (Known)": [1,2,3,4], 
-							"Discarded (Approx.)": [6,7]
+							"Known (Falcon)": [5],
+							"Known (non-Falcon)": [1,2,3,4], 
+							"Approximated": [6,7]
 						};
 
 				async function fetchEventsData() {
@@ -553,14 +553,14 @@
 						const reentryData = await response.json();
 						const reentriesByCategory = {};
 						
-						// Helper function to assign colors based on the reusability category
+						// Helper function to assign colors based on the location category
 						function getColorForCategory(cat) {
 							switch (cat) {
-								case 'Reusable Falcon':
+								case 'Known (Falcon)':
 									return 'green';
-								case 'Discarded (Known)':
+								case 'Known (non-Falcon)':
 									return 'blue';
-								case 'Discarded (Approx.)':
+								case 'Approximated':
 									return 'red';
 								default:
 									return 'gray'; // Default color for unknown categories
@@ -597,9 +597,9 @@
 							};
 						}
 
-						reentriesByCategory['Reusable Falcon'] = createReentryCategory('Reusable Falcon');
-						reentriesByCategory['Discarded (Known)'] = createReentryCategory('Discarded (Known)');
-						reentriesByCategory['Discarded (Approx.)'] = createReentryCategory('Discarded (Approx.)');
+						reentriesByCategory['Known (Falcon)'] = createReentryCategory('Known (Falcon)');
+						reentriesByCategory['Known (non-Falcon)'] = createReentryCategory('Known (non-Falcon)');
+						reentriesByCategory['Approximated'] = createReentryCategory('Approximated');
 
 						Object.keys(reentryData).forEach(date => {
 							reentryData[date].reentries.forEach(reentry => {
@@ -610,7 +610,7 @@
 								reentriesByCategory[locationGroup].date.push(reentry.date);
 								reentriesByCategory[locationGroup].id.push(reentry.id);
 								reentriesByCategory[locationGroup].time.push(reentry.time);
-								reentriesByCategory[locationGroup].smc.push(reentry.smc.toString());
+								reentriesByCategory[locationGroup].smc.push(reentry.smc ? "Yes" : "No");
 								reentriesByCategory[locationGroup].lat.push(reentry.lat);
 								reentriesByCategory[locationGroup].name.push(locationGroup);
 								reentriesByCategory[locationGroup].category.push(reentry.category);
@@ -714,9 +714,6 @@
 						const canvas = document.querySelector('canvas');
 						canvas.style.width = `${container.offsetWidth}px`;
 						canvas.style.height = `${container.offsetHeight}px`;
-
-						// Reset the WebGL renderer size to match the container
-						globe._renderer.setSize(container.offsetWidth, container.offsetHeight);
 						canvas.style.transform = 'none';
 					};
 
@@ -989,6 +986,9 @@
 
 			</script> 
 			<br>
+			<a href="#">Go to Top</a>
+			<br>
+			<br>
 			<h2>Frequently Asked Questions</h2>
 
 			<div id="faqs-container"></div>
@@ -1001,6 +1001,9 @@
 					{ question: "How do these chemicals affect the atmosphere?",
 						answer: "Re-entries release air pollutant emissions into the upper layers of the atmosphere, where they can have an outsized impact on our atmosphere and climate. NO<sub>x</sub> and Cl<sub>y</sub> are the largest contributors to destruction of the ozone layer from rocket emissions, with smaller destruction occuring from emissions of BC and Al<sub>2</sub>O<sub>3</sub> particles. The largest climate impacts come from BC emissions, which warm the upper layers of the atmosphere while cooling the lower layers."
 						},
+					{ question: "What does each filter represent?",
+						answer: "Location refers to the location constraint of the re-entry. Known (Falcon) refers to re-entries of Falcon 9 and Falcon Heavy lower stages, and Falcon fairings, where we use Raul's General Spacex Map to geolocate each re-entry. Known (non-Falcon) refers to re-entries where of known objects where we have detailed information on the re-entry location, such as coordinates or a named location. Approximated refers to re-entries where we only have information on the orbital inclination (tilt relative to the equator) of the object before re-entry. Category refers to the type of object re-entering the atmosphere (P=Payload, C=Component, B1-B4=Booster, S1-S4=Stage). Megaconstellation refers to whether the object belonged to a rocket launch containing megaconstellation payloads."
+						},					
 					{ question: "How is this data calculated?",
 					answer: "Our calculations are based on the current best scientific knowledge available for emissions from object re-entries. We use object-specific ablation profiles to calculate alumina emissions from object re-entries, including all objects with an apogee above 50 km. Paths shown in the Globe view are fixed at the re-entry location and do not represent real object trajectories."
 					},

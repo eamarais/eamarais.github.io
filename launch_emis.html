@@ -399,7 +399,7 @@
 
 			    // Initialize the default dates 
 				let startDate = '2020-01-01';
-				let endDate = '2021-01-01';
+				let endDate = '2020-02-01';
 
 				let autoRotate = true; // Flag to control rotation
 				let lastInteractionTime = Date.now(); // Track last user interaction
@@ -494,7 +494,7 @@
 						text: indicesToKeep.map(i => all_launches.text[i]),
 						id: indicesToKeep.map(i => all_launches.id[i]),
 						rocket: indicesToKeep.map(i => all_launches.rocket[i]),
-						smc: indicesToKeep.map(i => all_launches.smc[i]),
+						smc: indicesToKeep.map(i => all_launches.smc[i] ? "Yes" : "No"),
 						BC: indicesToKeep.map(i => all_launches.BC[i]),
 						CO: indicesToKeep.map(i => all_launches.CO[i]),
 						CO2: indicesToKeep.map(i => all_launches.CO2[i]),
@@ -894,6 +894,9 @@
 
 			</script> 
 			<br>
+			<a href="#">Go to Top</a>
+			<br>
+			<br>
 			<h2>Frequently Asked Questions</h2>
 
 			<div id="faqs-container"></div>
@@ -905,6 +908,9 @@
 						},
 						{ question: "How do these chemicals affect the atmosphere?",
 						answer: "Unlike man-made emissions from the surface of the Earth, rocket launches release air pollutant and CO<sub>2</sub> emissions throughout the atmosphere, where they can have an outsized impact on our atmosphere and climate. NO<sub>x</sub> and Cl<sub>y</sub> are the largest contributors to destruction of the ozone layer from rocket emissions, with smaller destruction occuring from emissions of BC and Al<sub>2</sub>O<sub>3</sub> particles. The largest climate impacts come from BC emissions, which warm the upper layers of the atmosphere while cooling the lower layers."
+						},
+						{ question: "What does each filter represent?",
+						answer: "Launch site refers to the location of the rocket launch. Launch vehicle refers to the type of rocket used for the launch. Megaconstellation refers to whether the launch contains megaconstellation payloads."
 						},
 						{ question: "How is this data calculated?",
 						answer: "Our calculations are based on the current best scientific knowledge available for emissions from rocket launches. We include the effects of a changing chemical environment with altitude in our launch emissions, and calculate emissions globally up to a maximum altitude of 80 km. Paths shown in the Globe view are fixed at the launch site and do not represent real rocket trajectories."
