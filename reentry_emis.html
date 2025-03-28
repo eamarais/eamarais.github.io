@@ -413,7 +413,7 @@
 
 				let globe;
 
-				let groupNames = ["Known (Falcon)", "Known (non-Falcon)", "Approximated"];
+				let groupNames = ["Known (Falcon)", "Known (non-Falcon)", "Approximate"];
 
 				function rotateGlobe() {
 					if (!autoRotate || !globe) return; // Stop rotation if the user interacted
@@ -547,7 +547,7 @@
 				const locationGroups = {
 							"Known (Falcon)": [5],
 							"Known (non-Falcon)": [1,2,3,4], 
-							"Approximated": [6,7]
+							"Approximate": [6,7]
 						};
 
 				async function fetchEventsData() {
@@ -564,7 +564,7 @@
 									return 'green';
 								case 'Known (non-Falcon)':
 									return 'blue';
-								case 'Approximated':
+								case 'Approximate':
 									return 'red';
 								default:
 									return 'gray'; // Default color for unknown categories
@@ -603,7 +603,7 @@
 
 						reentriesByCategory['Known (Falcon)'] = createReentryCategory('Known (Falcon)');
 						reentriesByCategory['Known (non-Falcon)'] = createReentryCategory('Known (non-Falcon)');
-						reentriesByCategory['Approximated'] = createReentryCategory('Approximated');
+						reentriesByCategory['Approximate'] = createReentryCategory('Approximate');
 
 						Object.keys(reentryData).forEach(date => {
 							reentryData[date].reentries.forEach(reentry => {
@@ -1006,7 +1006,7 @@
 						answer: "Re-entries release air pollutant emissions into the upper layers of the atmosphere, where they can have an outsized impact on our atmosphere and climate. NO<sub>x</sub> and Cl<sub>y</sub> are the largest contributors to destruction of the ozone layer from rocket emissions, with smaller destruction occuring from emissions of BC and Al<sub>2</sub>O<sub>3</sub> particles. The largest climate impacts come from BC emissions, which warm the upper layers of the atmosphere while cooling the lower layers."
 						},
 					{ question: "What does each filter represent?",
-						answer: "Location refers to the location constraint of the re-entry. Known (Falcon) refers to re-entries of Falcon 9 and Falcon Heavy lower stages, and Falcon fairings, where we use Raul's General Spacex Map to geolocate each re-entry. Known (non-Falcon) refers to re-entries where of known objects where we have detailed information on the re-entry location, such as coordinates or a named location. Approximated refers to re-entries where we only have information on the orbital inclination (tilt relative to the equator) of the object before re-entry. Category refers to the type of object re-entering the atmosphere (P=Payload, C=Component, B1-B4=Booster, S1-S4=Stage). Megaconstellation refers to whether the object belonged to a rocket launch containing megaconstellation payloads."
+						answer: "Location refers to the location constraint of the re-entry. Known (Falcon) refers to re-entries of Falcon 9 and Falcon Heavy lower stages, and Falcon fairings, where we use Raul's General Spacex Map to geolocate each re-entry. Known (non-Falcon) refers to re-entries where of known objects where we have detailed information on the re-entry location, such as coordinates or a named location. Approximate refers to re-entries where we only have information on the orbital inclination (tilt relative to the equator) of the object before re-entry. Category refers to the type of object re-entering the atmosphere (P=Payload, C=Component, B1-B4=Booster, S1-S4=Stage). Megaconstellation refers to whether the object belonged to a rocket launch containing megaconstellation payloads."
 						},					
 					{ question: "How is this data calculated?",
 					answer: "Our calculations are based on the current best scientific knowledge available for emissions from object re-entries. We use object-specific ablation profiles to calculate alumina emissions from object re-entries, including all objects with an apogee above 50 km. Paths shown in the Globe view are fixed at the re-entry location and do not represent real object trajectories."
