@@ -404,7 +404,7 @@
 
 			// Resume rotation after a period of inactivity
 			function checkInactivity() {
-				if (Date.now() - lastInteractionTime > 7000) { // 2 sec inactivity
+				if (Date.now() - lastInteractionTime > 7000) { // 7 sec inactivity
 					autoRotate = true;
 					rotateGlobe();
 				}
@@ -595,6 +595,7 @@
 					const lng = filtered_launches.lon[i];
 					const site = filtered_launches.text[i];  // launch site name
 					const id = filtered_launches.id[i];
+					const vehicle = filtered_launches.rocket[i];
 					const key = `${site}_${lat}_${lng}`;
 
 					if (!siteMap[key]) {
@@ -602,11 +603,11 @@
 						lat: lat - 1,
 						lng,
 						name: site,
-						ids: []
+						labels: []
 						};
 					}
 
-					siteMap[key].ids.push(`Launch ${id}`);
+					siteMap[key].labels.push(`Launch ${id} - ${vehicle}`);
 				});
 
 				// Step 2: Convert to array
@@ -624,7 +625,7 @@
 				.labelLat(d => d.lat)
 				.labelLng(d => d.lng)
 				.labelText(d => d.name)  // Label the location with the launch site.
-				.labelLabel(d => d.ids.join('<br>'))  // Hover over label gives launch IDs.
+				.labelLabel(d => d.labels.join('<br>'))  // Hover over label gives launch IDs.
 				.labelResolution(2)
 				.labelSize(1.5)
 				.labelDotRadius(0);
