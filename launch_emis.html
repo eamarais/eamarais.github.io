@@ -54,8 +54,15 @@
 <div id="content" class="widecolumn">
 
 	<div class="post" id="post-3">
-		<h2>Emissions from Rocket Launches</h2>
-			<div class="entry">	
+		<h2 style="text-transform: none;
+				   margin-top: 20px;
+				   margin-bottom: 20px;
+				   font-size: 3.2em;
+				   font-weight: 500;
+				   line-height: 1.2em;">
+			Emissions from Rocket Launches
+		</h2>
+		<div class="entry">	
 				
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 					
@@ -280,13 +287,15 @@
 	<div class="entry">
 		
 		<!-- Preamble to setup the content -->
-		<br>
-		Welcome to our tracker of pollutant and greenhouse gas emissions from rocket launches. Select a time window of interest to visualise pollution on a rotating globe, a static map, or a bar chart.<br />
-		<br>
-		For more information, see the <a href="#faqs-container">FAQs</a>  at the bottom of this page.
-		<br>
-		<br>
-		The time window available is for 3 years (2020-2022). <strong>We need your support to add more years and track emissions immediately after launches occur. Please donate to or share our <a href="https://gofund.me/3ba7e928" target="_blank">GoFundMe</a> page!</strong><br />
+		<h2 style="margin-top: 20px;
+		           margin-bottom: 20px;
+		           font-size: 1.5em;
+		           font-weight: 400;
+		           line-height: 1.2em;"">
+			Welcome to our tracker of pollutant and greenhouse gas emissions from rocket launches. Select a time window of interest to visualise pollution on a rotating globe, a static map, or a bar chart. 
+		</h2>
+		
+		For more information, see the <a href="#faqs-container">FAQs</a>  at the bottom of this page. The time window available is for 5 years (2020-2024). <strong>We need your support to track emissions immediately after launches occur. Please donate to or share our <a href="https://gofund.me/3ba7e928" target="_blank">GoFundMe</a> page!</strong><br />
 		<br>
 
 		Select your time window of interest:
@@ -433,8 +442,8 @@
 				}
 
 				// Populate each filter
-				populateCheckboxes('locationFilter', locations);
-				populateCheckboxes('rocketFilter', rockets);
+				populateCheckboxes('locationFilter', locations.sort());
+				populateCheckboxes('rocketFilter', rockets.sort());
 				populateCheckboxes('smcFilter', smcValues);
 			}
 
