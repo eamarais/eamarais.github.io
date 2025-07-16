@@ -54,8 +54,15 @@
 <div id="content" class="widecolumn">
 
 	<div class="post" id="post-3">
-		<h2>Emissions from Rocket Launches</h2>
-			<div class="entry">	
+		<h2 style="text-transform: none;
+				   margin-top: 20px;
+				   margin-bottom: 20px;
+				   font-size: 3.2em;
+				   font-weight: 500;
+				   line-height: 1.2em;">
+			Emissions from Rocket Launches
+		</h2>
+		<div class="entry">	
 				
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 					
@@ -433,8 +440,8 @@
 				}
 
 				// Populate each filter
-				populateCheckboxes('locationFilter', locations);
-				populateCheckboxes('rocketFilter', rockets);
+				populateCheckboxes('locationFilter', locations.sort());
+				populateCheckboxes('rocketFilter', rockets.sort());
 				populateCheckboxes('smcFilter', smcValues);
 			}
 
