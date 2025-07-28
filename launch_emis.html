@@ -214,6 +214,7 @@
 			display: flex;
 			justify-content: space-between;
 			gap: 20px;
+			position: relative;
 		}
 
 		/* Table styling */
@@ -282,6 +283,27 @@
 		.show-answer .expand {
 			display: none;
 		}
+
+		/* Style for the arrow button */
+		.arrow-button {
+			background: #143d59;
+			border: none;
+			margin: none;
+			color: whitesmoke;	
+			padding: 10px;		
+			font-size: 1rem; /* Increase size for better visibility */
+			position: absolute; /* Position relative to the table container */
+			top: 96.25px; /* Align with the top of the table */
+			left: -42px; /* Place the button outside the table on the right */
+			width: 42px;
+			height: 42px;
+			z-index: 10; /* Ensure the button is above other elements */
+		}
+
+		.arrow-button:focus {
+			outline: none;
+		}
+
 	</style>
 
 	<div class="entry">
@@ -354,7 +376,8 @@
 		<!-- Table for Launch Locations -->
 		<div class="table-container">
 			<div>
-				<h3>Launch Information (emissions in tonnes, time in UTC). SMC = Satellite Megaconstellation.</h3>
+				<h3>Launch Details (Click arrow to expand)</h3>
+				<p>[Emissions in tonnes, time in UTC. SMC=Satellite Megaconstellation]</p>
 				<table id="launchTable">
 					<thead>
 						<tr>
@@ -373,12 +396,13 @@
 							<th>NO<sub>x</sub></th>
 						</tr>
 					</thead>
-					<tbody id="launchTableBody">
+					<tbody id="launchTableBody" style="display: none;">
 						<!-- Dynamic rows for launch locations will be inserted here -->
 					</tbody>
-					<tfoot id="launchTableFoot">
+					<tfoot id="launchTableFoot" style="display: none;">
 						<!-- Totals for launches -->
 					</tfoot>
+					<button id="toggleTableButton" class="arrow-button">&#9650;</button>
 				</table>
 			</div>
 		</div>
@@ -894,6 +918,18 @@
 					toggleContainer('globe');
 					filterlaunches(all_launches);
 				});
+			});
+	
+			// JavaScript to toggle the table visibility and update the arrow
+			const toggleButton = document.getElementById('toggleTableButton');
+			const tableBody = document.getElementById('launchTableBody');
+			const tableFoot = document.getElementById('launchTableFoot');
+
+			toggleButton.addEventListener('click', () => {
+				const isHidden = tableBody.style.display === 'none';
+				tableBody.style.display = isHidden ? 'table-row-group' : 'none';
+				tableFoot.style.display = isHidden ? 'table-footer-group' : 'none';
+				toggleButton.innerHTML = isHidden ? '&#9660;' : '&#9650;'; // Down arrow when shown, up arrow when hidden
 			});
 
 			document.getElementById('globeplot').addEventListener('mousedown', stopRotation);

@@ -207,6 +207,7 @@
 			display: flex;
 			justify-content: space-between;
 			gap: 20px;
+			position: relative; /* Added to position the arrow button relative to this container */
 		}
 
 		/* Table styling */
@@ -275,6 +276,27 @@
 		.show-answer .expand {
 			display: none;
 		}
+
+		/* Style for the arrow button */
+		.arrow-button {
+			background: #143d59;
+			border: none;
+			margin: none;
+			color: whitesmoke;	
+			padding: 10px;		
+			font-size: 1rem; /* Increase size for better visibility */
+			position: absolute; /* Position relative to the table container */
+			top: 96.25px; /* Align with the top of the table */
+			left: -42px; /* Place the button outside the table on the right */
+			width: 42px;
+			height: 42px;
+			z-index: 10; /* Ensure the button is above other elements */
+		}
+
+		.arrow-button:focus {
+			outline: none;
+		}
+		
 	</style>
 
 		<div class="entry">
@@ -346,38 +368,37 @@
 			<!-- Table for Re-entry Locations -->
 			<div class="table-container">
 				<div>
-					<h3>Re-entry Details </h3>
+					<h3>Re-entry Details (Click arrow to expand) </h3>
 					<p>[Emissions in tonnes, time in UTC. SMC=Satellite Megaconstellation, Cat=Category, P=Payload, C=Component, B=Booster, S=Stage.]</p>
-					<h4></h4>
-					<h4></h4>
-					<table id="reentryTable">
-						<thead>
-							<tr>
-								<th>Date</th>
-								<th>ID</th>
-								<th>Time</th>
-								<th>Location</th>
-								<th>Name</th>
-								<th>Cat</th>
-								<th>SMC</th>
-								<th>Al<sub>2</sub>O<sub>3</sub></th>
-								<th>NO<sub>x</sub></th>
-								<th>BC</th>
-								<th>HCl</th>
-								<th>Cl</th>
-								<th>Unablated Mass</th>
-							</tr>
-						</thead>
-						<tbody id="reentryTableBody">
-							<!-- Dynamic rows for re-entry locations will be inserted here -->
-						</tbody>
-						<tfoot id="reentryTableFoot">
-							<!-- Totals for launches -->
-						</tfoot>
-					</table>
 					
-				</div>
-
+					<table id="reentryTable">
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>ID</th>
+									<th>Time</th>
+									<th>Location</th>
+									<th>Name</th>
+									<th>Cat</th>
+									<th>SMC</th>
+									<th>Al<sub>2</sub>O<sub>3</sub></th>
+									<th>NO<sub>x</sub></th>
+									<th>BC</th>
+									<th>HCl</th>
+									<th>Cl</th>
+									<th>Unablated Mass</th>
+								</tr>
+							</thead>
+							<tbody id="reentryTableBody" style="display: none;">
+								<!-- Dynamic rows for re-entry locations will be inserted here -->
+							</tbody>
+							<tfoot id="reentryTableFoot" style="display: none;">
+								<!-- Totals for launches -->
+							</tfoot>
+							<button id="toggleTableButton" class="arrow-button">&#9650;</button> <!-- Toggle button -->	
+						</table>
+						
+					</div>
 			</div>
 
 			<script>
@@ -629,7 +650,7 @@
 				}
 
 				function updateGlobe(filtered_reentries) {
-					
+
 					const MAX_POINTS_PER_LINE = 4;
 					const MAX_STEP_ALT = 0.1; // Control the altitude change
 
@@ -640,7 +661,7 @@
 					filtered_reentries.forEach(locationSet => {
 						const gData = locationSet.lat.map((latitude, index) => {
 							const longitude = locationSet.lon[index];
-							let alt = 0.3;
+							let alt = 0.1;
 							let path = [[latitude, longitude, alt]];
 
 							// You can adjust the number of points and the altitude increment to create the path
@@ -650,41 +671,42 @@
 							}
 							return {
 								path: path,
-								label: locationSet.id[index]  // Store the launch ID here
+								name: `Re-entry ID ${locationSet.id[index]}`,
 							};
 						});
 
-						const labels = locationSet.lat.map((latitude, index) => ({
-							lat: latitude - 1,
-							lng: locationSet.lon[index],
-							name: `Re-entry ID ${locationSet.id[index]}`, // Label based on launch ID
-						}));
-
 						allGData.push(...gData);
-						allLabels.push(...labels);
 					});
 
+					const OPACITYPATH  = 0.3;
+
 					globe = new Globe(document.getElementById('globeplot'))
-					.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
-					.bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
-					.pathsData(allGData.map(d => d.path))
-					.pathColor(() => 'rgba(255,0,0,0.6)') // Red for the reentry path
-					.pathDashLength(0.05)
-					.pathDashGap(0.02)
-					.pathDashAnimateTime(10000)
-					.pathStroke(10)
-					.labelsData(allLabels)
-					.labelLat(d => d.lat)
-					.labelLng(d => d.lng)
-					.labelText(d => d.name)  // Label the location with the launch ID
-					.labelResolution(2)
-					.labelSize(1.5)
-					.labelDotRadius(0);
+						.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
+						.bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
+						.pathsData(allGData)
+						.pathPoints(d => d.path)
+						.pathColor(() => `rgba(255, 0, 0, ${OPACITYPATH})`)
+						.pathDashLength(1)
+						.pathDashGap(0)
+						.pathDashAnimateTime(0)
+						.pathStroke(4)
+						.onPathHover(hoverPath => {
+							console.log('hoverPath:', hoverPath);
+							globe
+							.pathColor(d => {
+								const op = !hoverPath ? OPACITYPATH : d === hoverPath ? 0.9 : 0;
+								return `rgba(255, 0, 0, ${op})`;
+							})
+							.labelSize(d => {
+								// Show label only if this label matches the hovered path
+								return hoverPath && d.name === hoverPath.name ? 1.5 : 0;
+							});
+					})
 
 					setTimeout(() => {
 					globe
 						.pathPointAlt(pnt => pnt[2]) // Set altitude accessor
-						.pathTransitionDuration(5000) // Smooth transition in altitude
+						.pathTransitionDuration(0) // Smooth transition in altitude
 						.pointOfView({ lat: 0, lng: 0, altitude: 1.9 }, 1000);
 					}, 0);
 
@@ -961,13 +983,25 @@
 						filterreentries(all_reentries);
 					});
 				});
+				
+				// JavaScript to toggle the table visibility and update the arrow
+				const toggleButton = document.getElementById('toggleTableButton');
+				const tableBody = document.getElementById('reentryTableBody');
+				const tableFoot = document.getElementById('reentryTableFoot');
+
+				toggleButton.addEventListener('click', () => {
+					const isHidden = tableBody.style.display === 'none';
+					tableBody.style.display = isHidden ? 'table-row-group' : 'none';
+					tableFoot.style.display = isHidden ? 'table-footer-group' : 'none';
+					toggleButton.innerHTML = isHidden ? '&#9660;' : '&#9650;'; // Down arrow when shown, up arrow when hidden
+				});
 
 				document.getElementById('globeplot').addEventListener('mousedown', stopRotation);
 				document.getElementById('globeplot').addEventListener('wheel', stopRotation);
 				document.getElementById('globeplot').addEventListener('touchstart', stopRotation);
 				
-				rotateGlobe();
-				checkInactivity();
+				//rotateGlobe();
+				//checkInactivity();
 
 			</script> 
 			<br>
