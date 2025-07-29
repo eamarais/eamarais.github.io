@@ -54,7 +54,14 @@
 <div id="content" class="widecolumn">
 
 	<div class="post" id="post-3">
-			<h2>Emissions from Artificial Object Re-entries</h2>
+		<h2 style="text-transform: none;
+				   margin-top: 20px;
+				   margin-bottom: 20px;
+				   font-size: 3.2em;
+				   font-weight: 500;
+				   line-height: 1.2em;">
+            Emissions from Artificial Object Re-entries
+</h2>
 				<div class="entry">	
 				
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -207,7 +214,7 @@
 			display: flex;
 			justify-content: space-between;
 			gap: 20px;
-			position: relative; /* Added to position the arrow button relative to this container */
+			position: relative;
 		}
 
 		/* Table styling */
@@ -300,21 +307,15 @@
 	</style>
 
 		<div class="entry">
-				
 			<!-- Preamble to setup the content -->
-			<br>
-			Emissions tracker for objects re-entering the atmosphere since the start of the megaconstellation era. The Globe and Map views show the location and ID of each re-entry for the time windows, mission type, and object categories selected. Bars total the corresponding emissions and intact (unablated) mass. 
-			<br>
-			<br>
-			For more information, see the <a href="#faqs-container">FAQs</a>  at the bottom of the page.
-			<br>
+			Welcome to our tracker for objects re-entering the atmosphere since the start of the megaconstellation era. Select a time window of interest to visualise the location and ID of each re-entry for the time windows, mission type, and object categories selected. Bars total the corresponding emissions and intact (unablated) mass. For more information, see the <a href="#faqs-container">FAQs</a>  at the bottom of this page.<br/> 
 			<br>
 
 			Please select a date during 2020-2024. Large ranges may be slow to load.
 			<br>
 			<br>
 			<label>Start Date: <input type="date" id="datePicker1" name="datePicker1"></label>
-			<label>End Date: <input type="date" id="datePicker2" name="datePicker2"></label><br/>
+			<label>End Date: <input type="date" id="datePicker2" name="datePicker2"></label>
 			<br>
 
 			<div class="filter-container">
@@ -339,7 +340,7 @@
 					</div>
 				</div>
 				
-				<button id="applyFilters">Apply Filters</button>
+				<button type="submit" id="applyFilters">Apply Filters</button>
 
 			</div>
 			<br>
@@ -351,14 +352,12 @@
 				<div class="tab" id="bar-tab" onClick="toggleContainer('bar')">Bar</div>
 			</div>
 
-			<!-- Globe container -->
 			<div id="globe-container" class="globe-container">
-				<div id="globeplot" class="globe"></div> <!-- First globe container -->
+				<div id="globeplot" class="globe"></div> <!-- Globe container -->
 			</div>
 			
-			<!-- Map containers -->
 			<div id="map-container" class="map-container">
-				<div id="map2" class="map"></div> <!-- Map container -->
+				<div id="map1" class="map"></div> <!-- Map container -->
 			</div>
 
 			<div id="bar-container" class="bar-container">
@@ -392,7 +391,7 @@
 							<tbody id="reentryTableBody" style="display: none;">
 								<!-- Dynamic rows for re-entry locations will be inserted here -->
 							</tbody>
-							<tfoot id="reentryTableFoot" style="display: none;">
+							<tfoot id="reentryTableFoot">
 								<!-- Totals for launches -->
 							</tfoot>
 							<button id="toggleTableButton" class="arrow-button">&#9650;</button> <!-- Toggle button -->	
@@ -406,40 +405,18 @@
 				// Initialize with the globe container active
 				toggleContainer('globe');
 
-			    // Initialize the default dates 
+			    // Initialize variables 
 				let startDate = '2024-01-01';
 				let endDate = '2024-01-20';
-
-				let autoRotate = true; // Flag to control rotation
-				let lastInteractionTime = Date.now(); // Track last user interaction
-
 				let globe;
-
 				let groupNames = ["Known (Falcon)", "Known (non-Falcon)", "Approximate"];
 
-				function rotateGlobe() {
-					if (!autoRotate || !globe) return; // Stop rotation if the user interacted
-					
-					const POV = globe.pointOfView();
-					globe.pointOfView({ lat: POV.lat, lng: POV.lng + 0.2 , altitude: 1.9}, 10); // Adjust speed if needed
+				const locationGroups = {
+							"Known (Falcon)": [5],
+							"Known (non-Falcon)": [1,2,3,4], 
+							"Approximate": [6,7]
+						};
 
-					requestAnimationFrame(rotateGlobe);
-				}
-
-				// ** Detect User Interaction **
-				const stopRotation = () => {
-					autoRotate = false;
-					lastInteractionTime = Date.now();
-				};
-
-				// Resume rotation after a period of inactivity
-				function checkInactivity() {
-					if (Date.now() - lastInteractionTime > 2000) { // 2 sec inactivity
-						autoRotate = true;
-						rotateGlobe();
-					}
-					setTimeout(checkInactivity, 2000);
-				}
 
 				function populateFilters(reentries) {
 					// Get unique values from filtered_reentries for each filter
@@ -527,11 +504,10 @@
 					updateVisualizations(filteredData);
 				}
 
-				// Function to toggle containers
 				function toggleContainer(containerType) {
 					// Reset classes for all tabs and containers
 					document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active-tab'));
-					document.querySelectorAll('.globe-container, .map-container').forEach(container => container.classList.remove('active-container'));
+					document.querySelectorAll('.globe-container, .map-container, .bar-container').forEach(container => container.classList.remove('active-container'));
 
 					// Add active class to the clicked tab
 					if (containerType === 'globe') {
@@ -545,12 +521,6 @@
 						document.getElementById('bar-container').classList.add('active-container');
 					}
 				}				
-
-				const locationGroups = {
-							"Known (Falcon)": [5],
-							"Known (non-Falcon)": [1,2,3,4], 
-							"Approximate": [6,7]
-						};
 
 				async function fetchEventsData() {
 					try {
@@ -651,26 +621,15 @@
 
 				function updateGlobe(filtered_reentries) {
 
-					const MAX_POINTS_PER_LINE = 4;
-					const MAX_STEP_ALT = 0.1; // Control the altitude change
-
-					// Combine gData and labels for all locations in filtered_reentries
 					const allGData = [];
-					const allLabels = [];
 
 					filtered_reentries.forEach(locationSet => {
 						const gData = locationSet.lat.map((latitude, index) => {
 							const longitude = locationSet.lon[index];
-							let alt = 0.1;
-							let path = [[latitude, longitude, alt]];
-
-							// You can adjust the number of points and the altitude increment to create the path
-							for (let i = 0; i < MAX_POINTS_PER_LINE; i++) { // Adjust this for more points in the path
-								alt -= MAX_STEP_ALT; // Increase the altitude
-								path.push([latitude, longitude, alt]);
-							}
+	
 							return {
-								path: path,
+								lat: latitude,
+								lon: longitude,
 								name: `Re-entry ID ${locationSet.id[index]}`,
 							};
 						});
@@ -679,36 +638,37 @@
 					});
 
 					const OPACITYPATH  = 0.3;
-
-					globe = new Globe(document.getElementById('globeplot'))
-						.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
-						.bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
-						.pathsData(allGData)
-						.pathPoints(d => d.path)
-						.pathColor(() => `rgba(255, 0, 0, ${OPACITYPATH})`)
-						.pathDashLength(1)
-						.pathDashGap(0)
-						.pathDashAnimateTime(0)
-						.pathStroke(4)
-						.onPathHover(hoverPath => {
-							console.log('hoverPath:', hoverPath);
-							globe
-							.pathColor(d => {
-								const op = !hoverPath ? OPACITYPATH : d === hoverPath ? 0.9 : 0;
-								return `rgba(255, 0, 0, ${op})`;
-							})
-							.labelSize(d => {
-								// Show label only if this label matches the hovered path
-								return hoverPath && d.name === hoverPath.name ? 1.5 : 0;
+					
+					if (!globe) {
+						globe = new Globe(document.getElementById('globeplot'))
+							.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
+							.pointLat(d => d.lat)
+							.pointLng(d => d.lon)
+							.pointColor(() => `rgba(255, 0, 0, ${OPACITYPATH})`)
+							.pointRadius(0.5)
+							.pointAltitude(0.2)
+							.onPointHover(hoverPoint => {
+								globe
+								.pointColor(d => {
+									const op = !hoverPoint ? OPACITYPATH : d === hoverPoint ? 0.9 : 0;
+									return `rgba(255, 0, 0, ${op})`;
+								})
+								.labelSize(d => {
+									// Show label only if this label matches the hovered point
+									return hoverPoint && d.name === hoverPoint.name ? 1.5 : 0;
+								});
 							});
-					})
+						
+						globe.pointsData(allGData);
 
-					setTimeout(() => {
-					globe
-						.pathPointAlt(pnt => pnt[2]) // Set altitude accessor
-						.pathTransitionDuration(0) // Smooth transition in altitude
-						.pointOfView({ lat: 0, lng: 0, altitude: 1.9 }, 1000);
-					}, 0);
+						setTimeout(() => {
+						globe
+							.pointOfView({ lat: 0, lng: 0, altitude: 1.9 }, 1000);
+						}, 0);
+
+					} else {
+						globe.pointsData(allGData);
+					}
 
 					// Function to resize the globe based on its container size
 					const resizeGlobe = () => {
@@ -782,7 +742,7 @@
 							<td>${date}</td>
 							<td>${location}</td> 
 							<td>${time.toFixed(2)}</td>
-							<td>${name}</td>
+							<td class="wrap-text">${name}</td>
 							<td class="wrap-text">${objname}</td>
 							<td>${category}</td>
 							<td>${smc}</td>
@@ -893,7 +853,7 @@
 					};
 					
 					const layout2 = { ...commonLayout};
-					Plotly.newPlot('map2', plotlyData, layout2);
+					Plotly.newPlot('map1', plotlyData, layout2);
 				}
 				
 				function updateGraph(filtered_reentries) {
@@ -987,21 +947,12 @@
 				// JavaScript to toggle the table visibility and update the arrow
 				const toggleButton = document.getElementById('toggleTableButton');
 				const tableBody = document.getElementById('reentryTableBody');
-				const tableFoot = document.getElementById('reentryTableFoot');
 
 				toggleButton.addEventListener('click', () => {
 					const isHidden = tableBody.style.display === 'none';
 					tableBody.style.display = isHidden ? 'table-row-group' : 'none';
-					tableFoot.style.display = isHidden ? 'table-footer-group' : 'none';
 					toggleButton.innerHTML = isHidden ? '&#9660;' : '&#9650;'; // Down arrow when shown, up arrow when hidden
 				});
-
-				document.getElementById('globeplot').addEventListener('mousedown', stopRotation);
-				document.getElementById('globeplot').addEventListener('wheel', stopRotation);
-				document.getElementById('globeplot').addEventListener('touchstart', stopRotation);
-				
-				//rotateGlobe();
-				//checkInactivity();
 
 			</script> 
 			<br>

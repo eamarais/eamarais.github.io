@@ -307,18 +307,14 @@
 	</style>
 
 	<div class="entry">
-		
 		<!-- Preamble to setup the content -->
+		Welcome to our tracker of pollutant and greenhouse gas emissions from rocket launches. Select a time window of interest to visualise pollution on a globe, static map, or bar chart. For more information, see the <a href="#faqs-container">FAQs</a>  at the bottom of this page.<br/>
 		<br>
-		Welcome to our tracker of pollutant and greenhouse gas emissions from rocket launches. Select a time window of interest to visualise pollution on a rotating globe, a static map, or a bar chart.<br />
-		<br>
-		For more information, see the <a href="#faqs-container">FAQs</a>  at the bottom of this page.
-		<br>
-		<br>
-		The time window is for 5 years (2020-2024). <strong>We need your support to add more years and track emissions immediately after launches. Please donate to or share our <a href="https://gofund.me/3ba7e928" target="_blank">GoFundMe</a> page!</strong><br />
+		The time window is for 5 years (2020-2024). <strong>We need your support to add more years and track emissions immediately after launches. Please donate to or share our <a href="https://gofund.me/3ba7e928" target="_blank">GoFundMe</a> page!</strong><br/>
 		<br>
 
-		Select your time window of interest:
+		Please select a date during 2020-2024.
+		<br>
 		<br>
 		<label>Start Date: <input type="date" id="datePicker1" name="datePicker1"></label>
 		<label>End Date: <input type="date" id="datePicker2" name="datePicker2"></label>
@@ -358,19 +354,17 @@
 			<div class="tab" id="bar-tab" onClick="toggleContainer('bar')">Bar</div>
 		</div>
 
-		<!-- Globe container -->
 		<div id="globe-container" class="globe-container">
-			<div id="globeplot" class="globe"></div> 
+			<div id="globeplot" class="globe"></div> <!-- Globe container -->
 		</div>
 
-		<!-- Map container -->
+		
 		<div id="map-container" class="map-container">
-			<div id="map1" class="map"></div>
+			<div id="map1" class="map"></div> <!-- Map container -->
 		</div>
 		
-		<!-- Bar container -->
 		<div id="bar-container" class="bar-container">
-			<div id="bar1" class="bar"></div> 
+			<div id="bar1" class="bar"></div> <!-- Bar container -->
 		</div>
 
 		<!-- Table for Launch Locations -->
@@ -399,7 +393,7 @@
 					<tbody id="launchTableBody" style="display: none;">
 						<!-- Dynamic rows for launch locations will be inserted here -->
 					</tbody>
-					<tfoot id="launchTableFoot" style="display: none;">
+					<tfoot id="launchTableFoot">
 						<!-- Totals for launches -->
 					</tfoot>
 					<button id="toggleTableButton" class="arrow-button">&#9650;</button>
@@ -415,34 +409,7 @@
 			// Initialize the default dates 
 			let startDate = '2024-03-01';
 			let endDate = '2024-05-01';
-
-			let autoRotate = true; // Flag to control rotation
-			let lastInteractionTime = Date.now(); // Track last user interaction
-
 			let globe;
-
-			function rotateGlobe() {
-				if (!autoRotate || !globe) return; // Stop rotation if the user interacted
-				const POV = globe.pointOfView();
-				globe.pointOfView({ lat: POV.lat, lng: POV.lng + 0.2 , altitude: 1.9}, 10); // Adjust speed if needed
-
-				requestAnimationFrame(rotateGlobe);
-			}
-
-			// ** Detect User Interaction **
-			const stopRotation = () => {
-				autoRotate = false;
-				lastInteractionTime = Date.now();
-			};
-
-			// Resume rotation after a period of inactivity
-			function checkInactivity() {
-				if (Date.now() - lastInteractionTime > 7000) { // 7 sec inactivity
-					autoRotate = true;
-					rotateGlobe();
-				}
-				setTimeout(checkInactivity, 2000);
-			}
 
 			function populateFilters(launches) {
 				// Get unique values from filtered_launches for each filter
@@ -523,7 +490,6 @@
 				updateVisualizations(filteredData);
 			}
 
-			// Function to toggle containers
 			function toggleContainer(containerType) {
 				// Reset classes for all tabs and containers
 				document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active-tab'));
@@ -602,23 +568,14 @@
 			}
 
 			function updateGlobe(filtered_launches) {
-				
-				const MAX_POINTS_PER_LINE = 2; // Less points for a vertical launch
-				const MAX_STEP_ALT = 0.1; // Control the altitude change
 
 				const gData = filtered_launches.lat.map((latitude, index) => {
 					const longitude = filtered_launches.lon[index];
-					let alt = 0;
-					let path = [[latitude, longitude, alt]];
 
-					// You can adjust the number of points and the altitude increment to create the path
-					for (let i = 0; i < MAX_POINTS_PER_LINE; i++) { // Adjust this for more points in the path
-						alt += MAX_STEP_ALT; // Increase the altitude
-						path.push([latitude, longitude, alt]);
-					}
 					return {
-						path: path,
-						label: filtered_launches.id[index]  // Store the launch ID here
+						lat: latitude,
+						lon: longitude,
+						//name: `Launch ID ${filtered_launches.id[index]}`,
 					};
 				});
 
@@ -646,29 +603,36 @@
 				// Step 2: Convert to array
 				const labelSites = Object.values(siteMap);
 
-				globe = new Globe(document.getElementById('globeplot'))
-				.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
-				.pathsData(gData.map(d => d.path))
-				.pathColor(() => 'rgba(0,255,0,0.6)') // Green for the rocket launch path
-				.pathDashLength(0.05)
-				.pathDashGap(0.02)
-				.pathDashAnimateTime(10000)
-				.pathStroke(10)
-				.labelsData(labelSites)  // Use the grouped version
-				.labelLat(d => d.lat)
-				.labelLng(d => d.lng)
-				.labelText(d => d.name)  // Label the location with the launch site.
-				.labelLabel(d => d.labels.join('<br>'))  // Hover over label gives launch IDs.
-				.labelResolution(2)
-				.labelSize(1.5)
-				.labelDotRadius(0);
+				const OPACITYPATH  = 0.3;
 
-				setTimeout(() => {
-				globe
-					.pathPointAlt(pnt => pnt[2]) // Set altitude accessor
-					.pathTransitionDuration(5000) // Smooth transition in altitude
-					.pointOfView({ lat: 0, lng: 0, altitude: 1.9 }, 1000);
-				}, 1000);
+				if (!globe) {
+					globe = new Globe(document.getElementById('globeplot'))
+						.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
+						.pointLat(d => d.lat)
+						.pointLng(d => d.lon)
+						.pointColor(() => `rgba(0, 255, 0, ${OPACITYPATH})`)
+						.pointRadius(0.5)
+						.pointAltitude(0.2)
+						.labelLat(d => d.lat)
+						.labelLng(d => d.lng)
+						.labelText(d => d.name)  // Label the location with the launch site.
+						.labelLabel(d => d.labels.join('<br>'))  // Hover over label gives launch IDs.
+						.labelResolution(2)
+						.labelSize(1.5)
+						.labelDotRadius(0);
+
+					globe.pointsData(gData);
+					globe.labelsData(labelSites);
+
+					setTimeout(() => {
+					globe
+						.pointOfView({ lat: 0, lng: 0, altitude: 1.9 }, 1000);
+					}, 0);
+			
+			} else {
+				globe.pointsData(gData);
+				globe.labelsData(labelSites);
+			}
 
 				// Function to resize the globe based on its container size
 				const resizeGlobe = () => {
@@ -923,24 +887,14 @@
 			// JavaScript to toggle the table visibility and update the arrow
 			const toggleButton = document.getElementById('toggleTableButton');
 			const tableBody = document.getElementById('launchTableBody');
-			const tableFoot = document.getElementById('launchTableFoot');
 
 			toggleButton.addEventListener('click', () => {
 				const isHidden = tableBody.style.display === 'none';
 				tableBody.style.display = isHidden ? 'table-row-group' : 'none';
-				tableFoot.style.display = isHidden ? 'table-footer-group' : 'none';
 				toggleButton.innerHTML = isHidden ? '&#9660;' : '&#9650;'; // Down arrow when shown, up arrow when hidden
 			});
 
-			document.getElementById('globeplot').addEventListener('mousedown', stopRotation);
-			document.getElementById('globeplot').addEventListener('wheel', stopRotation);
-			document.getElementById('globeplot').addEventListener('touchstart', stopRotation);
-			
-			rotateGlobe();
-			checkInactivity();
-
 		</script> 
-
 		<br>
 		<a href="#">Go to Top</a>
 		<br>
