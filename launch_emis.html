@@ -11,7 +11,7 @@
 		#page { background: url("./themes/default/images/kubrickbgwide.jpg") repeat-y top; border: none; }
 	</style>
 
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="https://cdn.plot.ly/plotly-3.0.3.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
 	<script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 
@@ -164,29 +164,29 @@
 		}
 	
 		/* Container to align the maps side by side */
-		.map-container {
+		.map-container .globe-container .bar-container {
 			display: flex;
-			justify-content: space-between;
-			gap: 20px;
-			padding: 20px;
-			/* Ensure container size is constrained */
-			width: 100%; /* or set a specific width like 80% if desired */
-			height: 100%; /* You can adjust this as needed */
-			box-sizing: border-box; /* Ensure padding is included in the container size */
+			width: 100%; 
+			height: 100%; 
 		}
 
-		/* Prevent flex items from stretching */
-		.globe-container {
-			flex-shrink: 0;
-			flex-grow: 0;
-			width: 100%; /* Ensure it fills the available space */
-			height: 100%; /* Ensure it fills the available height */
+		#bar {
+			flex: 1;
+			max-width: 25%;
+			height: 100%;
+			max-height: 100%;
 		}
 
-		/* Prevent flex items from stretching */
-		.bar-container {
-			width: 100%; /* Ensure it fills the available space */
-			height: 100%; /* Ensure it fills the available height */
+		#map {
+			width: 100%;
+			height: 100%;  /* or 100%, or whatever fits your layout */
+			margin: 0;
+			padding: 0;
+		}
+
+		#stack {
+			flex: 3;
+			max-width: 75%;
 		}
 
 		/* Style for the tabs */
@@ -197,24 +197,25 @@
         }
 
         .tab {
-            padding: 10px 20px;
+            padding: 5px 5px;
             margin-right: 10px;
-            background-color: #f0f0f0;
+            background-color: #143d59;
             border: 1px solid #ccc;
             border-radius: 5px;
+			color: whitesmoke;
         }
 
         .tab:hover {
-            background-color: #ddd;
+            background-color: #246a99;
         }
 
         .active-tab {
-            background-color: #ccc;
+            background-color: #246a99;
             font-weight: bold;
         }
 
 		/* Initially hide both containers */
-		.globe-container, .map-container, .bar-container {
+		.globe-container, .map-container, .chart-container {
 			display: none;
         }
 
@@ -222,6 +223,11 @@
         .active-container {
             display: block;
         }
+
+		/* Then override for bar-container */
+		.chart-container.active-container {
+			display: flex;
+		}
 
 		.map {
 			flex: 1;
@@ -233,7 +239,7 @@
 			height: 100%;
 		}
 
-		.bar {
+		.chart {
 			width: 100%;
 		}
 
@@ -419,22 +425,23 @@
 
 		<!-- Tabs for globe and map -->
 		<div class="tabs">
+			<div class="tab" id="chart-tab" onClick="toggleContainer('chart')">Chart</div>
 			<div class="tab" id="globe-tab" onClick="toggleContainer('globe')">Globe</div>
 			<div class="tab" id="map-tab"   onClick="toggleContainer('map')">Map</div>
-			<div class="tab" id="bar-tab"   onClick="toggleContainer('bar')">Bar</div>
 			<button class="tab" type="submit" id="applyFilters">Apply Filters</button>
 		</div>
 
-		<div id="globe-container" class="globe-container">
-			<div id="globeplot" class="globe"></div> <!-- Globe container -->
+		<div id="globe-container" class="globe-container"> <!-- Globe container -->
+			<div id="globe" class="globe"></div> 
 		</div>
 
-		<div id="map-container" class="map-container">
-			<div id="map1" class="map"></div> <!-- Map container -->
+		<div id="map-container" class="map-container"> <!-- Map container -->
+			<div id="map" class="map"></div> 
 		</div>
 		
-		<div id="bar-container" class="bar-container">
-			<div id="bar1" class="bar"></div> <!-- Bar container -->
+		<div id="chart-container" class="chart-container"> <!-- Chart container -->
+			<div id="stack" class="chart"></div> <!-- Stack container -->
+			<div id="bar"   class="chart"></div> <!-- Bar container -->
 		</div>
 
 		<!-- Table for Launch Locations -->
@@ -503,7 +510,7 @@
 				}
 
 			noUiSlider.create(slider, {
-				start: [48, 60],
+				start: [0, 60],
 				connect: true,
 				step: 1,
 				range: {
@@ -635,20 +642,22 @@
 			function toggleContainer(containerType) {
 				// Reset classes for all tabs and containers
 				document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active-tab'));
-				document.querySelectorAll('.globe-container, .map-container, .bar-container').forEach(container => container.classList.remove('active-container'));
+				document.querySelectorAll('.globe-container, .map-container, .chart-container').forEach(container => container.classList.remove('active-container'));
 
 				// Add active class to the clicked tab
 				if (containerType === 'globe') {
 					document.getElementById('globe-tab').classList.add('active-tab');
 					document.getElementById('globe-container').classList.add('active-container');
+					resizeGlobe();
 				} else if (containerType === 'map') {
 					document.getElementById('map-tab').classList.add('active-tab');
 					document.getElementById('map-container').classList.add('active-container');
-				} else if (containerType === 'bar') {
-					document.getElementById('bar-tab').classList.add('active-tab');
-					document.getElementById('bar-container').classList.add('active-container');
+					Plotly.Plots.resize(document.getElementById('map'));
+				} else if (containerType === 'chart') {
+					document.getElementById('chart-tab').classList.add('active-tab');
+					document.getElementById('chart-container').classList.add('active-container');
 				}
-			}
+			}	
 			
 			async function fetchEventsData() {
 				try {
@@ -707,6 +716,7 @@
 				updateMaps(filtered_launches);
 				updateGraph(filtered_launches);
 				updateGlobe(filtered_launches);
+				updateStack(filtered_launches);
 			}
 
 			function updateGlobe(filtered_launches) {
@@ -748,7 +758,7 @@
 				const OPACITYPATH  = 0.3;
 
 				if (!globe) {
-					globe = new Globe(document.getElementById('globeplot'))
+					globe = new Globe(document.getElementById('globe'))
 						.globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
 						.pointLat(d => d.lat)
 						.pointLng(d => d.lon)
@@ -771,30 +781,10 @@
 						.pointOfView({ lat: 0, lng: 0, altitude: 1.9 }, 1000);
 					}, 0);
 			
-			} else {
-				globe.pointsData(gData);
-				globe.labelsData(labelSites);
-			}
-
-				// Function to resize the globe based on its container size
-				const resizeGlobe = () => {
-					const container = document.getElementById('globeplot');
-					
-					// Set the width and height of the globe based on the container's size
-					globe.width(container.offsetWidth).height(container.offsetHeight);
-					
-					// Manually reset the canvas element size to match the container size
-					const canvas = document.querySelector('canvas');
-					canvas.style.width = `${container.offsetWidth}px`;
-					canvas.style.height = `${container.offsetHeight}px`;
-					canvas.style.transform = 'none';
-				};
-
-				// Resize the globe on window resize
-				window.addEventListener('resize', resizeGlobe);
-
-				// Trigger the resize immediately after the globe is initialized
-				resizeGlobe();
+				} else {
+					globe.pointsData(gData);
+					globe.labelsData(labelSites);
+				}
 			}
 
 			function updateTables(filtered_launches) {
@@ -886,8 +876,7 @@
 					marker: { size: 0 }, // Invisible markers
 				}];
 
-				// Common layout configuration
-				const commonLayout = {
+				const layout = {
 					geo: {
 						resolution: 100, 
 						projection: { type: 'robinson' },
@@ -926,75 +915,149 @@
 							zeroline: false
 						}
 					},
-					margin: { t: 50, b: 0, l: 0, r: 0 }, // Adjust top margin for title
-					title: { font: { size: 18 }, xanchor: 'center', yanchor: 'top', y: 0 }, // Adjust title position
+					autosize: true,  // Automatically resize the chart
+					margin: {
+						l: 40,
+						r: 40,
+						t: 40,
+						b: 40  // <- reduce bottom margin here
+					}
 				};
 
-				// Add individual titles
-				const layout1 = { ...commonLayout, title: { text: 'Launches', font: { size: 18 } }};
-
 				// Render the maps with their legends
-				Plotly.newPlot('map1', mapData1, layout1);
+				Plotly.newPlot('map', mapData1, layout, {responsive: true});
 			}
+
+			const prettyNames = {
+					BC: 'BC',
+					CO: 'CO',
+					CO2: 'CO<sub>2</sub>',
+					H2O: 'H<sub>2</sub>O',
+					Al2O3: 'Al<sub>2</sub>O<sub>3</sub>',
+					Cly: 'Cl<sub>y</sub>',
+					NOx: 'NO<sub>x</sub>'
+					};
 			
 			function updateGraph(filtered_launches) {
 
-				let totalBC = 0, totalCO = 0, totalH2O = 0;
-				let totalAl2O3 = 0, totalCO2 = 0, totalCly =0;
-				let totalNOx = 0;
+				const totals = {
+					BC: 0,
+					CO: 0,
+					CO2: 0,
+					H2O: 0,
+					Al2O3: 0,
+					Cly: 0,
+					NOx: 0
+				};
 				filtered_launches.id.forEach((location, index) => {
-					const row = document.createElement('tr');
-					const BC    = filtered_launches.BC[index];
-					const CO    = filtered_launches.CO[index];
-					const CO2   = filtered_launches.CO2[index];
-					const H2O   = filtered_launches.H2O[index];
-					const Al2O3 = filtered_launches.Al2O3[index];
-					const Cly   = filtered_launches.Cly[index];
-					const NOx    = filtered_launches.NOx[index];
-					totalBC    += BC;
-					totalCO    += CO;
-					totalCO2   += CO2;
-					totalH2O   += H2O;
-					totalAl2O3 += Al2O3;
-					totalCly   += Cly;
-					totalNOx   += NOx;
+					totals.BC    += filtered_launches.BC[index];
+					totals.CO    += filtered_launches.CO[index];
+					totals.CO2   += filtered_launches.CO2[index];
+					totals.H2O   += filtered_launches.H2O[index];
+					totals.Al2O3 += filtered_launches.Al2O3[index];
+					totals.Cly   += filtered_launches.Cly[index];
+					totals.NOx   += filtered_launches.NOx[index];
 				});
 				
 				// Prepare the data for Plotly
-				const labels = ['BC', 'CO', 'CO<sub>2</sub>', 'H<sub>2</sub>O', 'Al<sub>2</sub>O<sub>3</sub>','Cl<sub>y</sub>', 'NO<sub>x</sub>'];
-				const data = [totalBC, totalCO, totalCO2, totalH2O, totalAl2O3, totalCly, totalNOx];
-				const maxYValue = Math.max(...data);
-
-				const trace = {
-					x: labels,
-					y: data,
-					type: 'bar',  // Bar chart (you can change to line, pie, etc.)
-					marker: {
-						color: 'rgba(75, 192, 192, 0.7)'
-					}
-				};
+				const maxYValue = Object.values(totals).reduce((sum, val) => sum + val, 0);
+				
+				const trace = Object.keys(totals).map(key => ({
+					x: ['Total'],
+					y: [totals[key]],
+					name: prettyNames[key],
+					type: 'bar',
+				}));
 				
 				const layout = {
-					title: `Emissions between ${startDate} and ${endDate}`,
-					xaxis: {
-						title: 'Compound',
-						font: {
-							color: 'green', // Set x-axis label color
-							size: 14        // x-axis font size
-						}
+					title: {
+						text: 'Total Emissions',
 					},
+					barmode: 'stack',
 					yaxis: {
-						title: 'Mass [t]',
 						range: [0,maxYValue]
 					},
+					legend: {
+						orientation: 'v',
+						x: 1.05,
+						y: 1,
+						itemwidth: 3,
+					},
 					autosize: true,  // Automatically resize the chart
-					responsive: true // Ensure the chart resizes with the window
+					margin: {
+						l: 40,
+						r: 40,
+						t: 40,
+						b: 0  // <- reduce bottom margin here
+					}
 				};
 
 				// Plot the chart inside the 'emissionsChart' div
-				Plotly.newPlot('bar1', [trace], layout);
+				Plotly.newPlot('bar', trace, layout, {responsive: true});
 
 			}
+
+			function updateStack(filtered_launches) {
+
+				const species = ['BC', 'CO', 'CO2', 'H2O', 'Al2O3', 'Cly', 'NOx'];
+				
+				const monthlySums = {};
+
+				// Step 1: Loop through each launch (index)
+				for (let i = 0; i < filtered_launches.date.length; i++) {
+					const month = filtered_launches.date[i].slice(0, 7);  // 'YYYY-MM'
+					if (!monthlySums[month]) {
+						monthlySums[month] = {};
+						species.forEach(sp => monthlySums[month][sp] = 0);
+					}
+					species.forEach(sp => {
+						monthlySums[month][sp] += Number(filtered_launches[sp][i]) || 0; // Ensure numeric
+					});
+					}
+
+				const months = Object.keys(monthlySums).sort();
+				const maxYValue = Math.max(...months);
+
+				const traces = species.map(sp => ({
+					x: months,
+					y: months.map(m => monthlySums[m][sp]),
+					stackgroup: 'one',
+					name: prettyNames[sp],
+					type: 'scatter',
+					mode: 'none',
+				}));
+
+				const layout = {
+					autosize: true,
+					title: {
+						text: 'Monthly Emissions (click legend to show/hide species)',
+					},
+					font: {
+						size: 12        // x-axis font size
+					},
+					yaxis: {
+						title: {
+							text: 'Mass [t]',
+						},
+						range: [0,maxYValue]
+					},
+					legend: {
+						orientation: 'v',
+						x: 1.05,
+						y: 1
+					},
+					autosize: true,  // Automatically resize the chart
+					margin: {
+						l: 40,
+						r: 40,
+						t: 40,
+						b: 0  // <- reduce bottom margin here
+					}
+				};
+
+				Plotly.newPlot('stack', traces , layout, {responsive: true});
+
+				}
 			
 			// Plot a default date when the page opens, then update when the date changes.
 			document.addEventListener('DOMContentLoaded', () => {
@@ -1014,7 +1077,7 @@
 			const tableBody = document.getElementById('launchTableBody');
 
 			// Initialize with the globe container active
-			toggleContainer('globe');
+			toggleContainer('chart');
 
 			toggleButton.addEventListener('click', () => {
 				const isHidden = tableBody.style.display === 'none';
@@ -1045,6 +1108,19 @@
 					});
 				}
 			});
+
+			// Function to resize the globe based on its container size
+			const resizeGlobe = () => {
+				const container = document.getElementById('globe');
+				// Set the width and height of the globe based on the container's size
+				globe.width(container.offsetWidth).height(container.offsetHeight);
+				
+				// Manually reset the canvas element size to match the container size
+				const canvas = document.querySelector('canvas');
+				canvas.style.width = `${container.offsetWidth}px`;
+				canvas.style.height = `${container.offsetHeight}px`;
+				canvas.style.transform = 'none';
+			};
 
 		</script> 
 		<br>
