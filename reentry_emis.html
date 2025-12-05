@@ -753,11 +753,11 @@
 									reentriesByCategory[locationGroup].category.push(reentry.category);
 									reentriesByCategory[locationGroup].lon.push(reentry.lon);
 									reentriesByCategory[locationGroup].objname.push(reentry.name);
-									reentriesByCategory[locationGroup].al.push(reentry.emissions.Al2O3);
-									reentriesByCategory[locationGroup].nox.push(reentry.emissions.NOx);
-									reentriesByCategory[locationGroup].bc.push(reentry.emissions.BC);
-									reentriesByCategory[locationGroup].hcl.push(reentry.emissions.HCl);
-									reentriesByCategory[locationGroup].cl.push(reentry.emissions.Cl);
+									reentriesByCategory[locationGroup].al.push(parseFloat(reentry.emissions.Al2O3));
+									reentriesByCategory[locationGroup].nox.push(parseFloat(reentry.emissions.NOx));
+									reentriesByCategory[locationGroup].bc.push(parseFloat(reentry.emissions.BC));
+									reentriesByCategory[locationGroup].hcl.push(parseFloat(reentry.emissions.HCl));
+									reentriesByCategory[locationGroup].cl.push(parseFloat(reentry.emissions.Cl));
 									reentriesByCategory[locationGroup].unab_mass.push(reentry.emissions.Unablated_Mass);
 								});
 							});
